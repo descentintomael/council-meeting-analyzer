@@ -221,7 +221,6 @@ def create_summary_panel(stats: dict) -> Panel:
 
 def create_dashboard():
     """Create the full dashboard as a simple printable format."""
-    init_database()
     stats = get_processing_stats()
 
     # Top row: Summary + Disk Usage
@@ -251,7 +250,7 @@ def create_dashboard():
 
 def run_dashboard(refresh_rate: float = 5.0, once: bool = False):
     """Run the dashboard with live updates."""
-    init_database()
+    init_database(quiet=True)
 
     if once:
         console.print(create_dashboard())

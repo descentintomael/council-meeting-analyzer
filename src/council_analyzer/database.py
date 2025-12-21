@@ -118,12 +118,13 @@ def get_db():
         conn.close()
 
 
-def init_database():
+def init_database(quiet: bool = False):
     """Initialize database with schema."""
     config.DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     with get_db() as conn:
         conn.executescript(SCHEMA)
-    print(f"Database initialized at {config.DB_PATH}")
+    if not quiet:
+        print(f"Database initialized at {config.DB_PATH}")
 
 
 def insert_meeting(
