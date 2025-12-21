@@ -13,8 +13,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
-from rich.layout import Layout
 from rich.live import Live
+from rich.columns import Columns
+from rich.console import Group
 from rich.text import Text
 from rich import box
 
@@ -83,7 +84,7 @@ def create_status_table(stats: dict) -> Table:
     ]
 
     by_status = stats.get("by_status", {})
-    total = stats.get("total", 0)
+    total = stats.get("total_meetings", 0)
 
     for key, label, style in stages:
         count = by_status.get(key, 0)
@@ -183,7 +184,7 @@ def create_disk_usage_table() -> Table:
 def create_summary_panel(stats: dict) -> Panel:
     """Create summary panel with key metrics."""
     by_status = stats.get("by_status", {})
-    total = stats.get("total", 0)
+    total = stats.get("total_meetings", 0)
 
     analyzed = by_status.get("analyzed", 0)
     validated = by_status.get("validated", 0)
@@ -218,14 +219,24 @@ def create_summary_panel(stats: dict) -> Panel:
     return Panel(text, title="Summary", border_style="cyan")
 
 
-def create_dashboard() -> Layout:
-    """Create the full dashboard layout."""
+def create_dashboard():
+    """Create the full dashboard as a simple printable format."""
     init_database()
     stats = get_processing_stats()
 
-    layout = Layout()
+    # Top row: Summary + Disk Usage
+    top_row = Columns([create_summary_panel(stats), create_disk_usage_table()], equal=True)
 
-    # Create header
+    # Status table
+    status = create_status_table(stats)
+
+    # Activity table
+    activity = create_activity_table(stats)
+
+    # Recent completed
+    recent = create_recent_completed_table()
+
+    # Header
     header = Panel(
         Text.from_markup(
             f"[bold cyan]Council Meeting Analysis Pipeline[/bold cyan]\n"
@@ -234,31 +245,8 @@ def create_dashboard() -> Layout:
         box=box.ROUNDED,
     )
 
-    # Create main content
-    layout.split_column(
-        Layout(header, name="header", size=4),
-        Layout(name="main"),
-        Layout(name="footer", size=12),
-    )
-
-    layout["main"].split_row(
-        Layout(name="left"),
-        Layout(name="right"),
-    )
-
-    layout["left"].split_column(
-        Layout(create_summary_panel(stats), name="summary", size=8),
-        Layout(create_status_table(stats), name="status"),
-    )
-
-    layout["right"].split_column(
-        Layout(create_activity_table(stats), name="activity"),
-        Layout(create_disk_usage_table(), name="disk", size=8),
-    )
-
-    layout["footer"].update(create_recent_completed_table())
-
-    return layout
+    # Return a group that can be rendered
+    return Group(header, top_row, status, activity, recent)
 
 
 def run_dashboard(refresh_rate: float = 5.0, once: bool = False):
