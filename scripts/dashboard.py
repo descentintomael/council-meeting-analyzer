@@ -19,7 +19,7 @@ from rich.console import Group
 from rich.text import Text
 from rich import box
 
-from council_analyzer.database import init_database, get_processing_stats, get_meetings_by_status
+from council_analyzer.database import init_database, get_processing_stats, get_meetings_by_status, get_db
 from council_analyzer.config import config
 
 
@@ -54,6 +54,103 @@ def get_recent_meetings(status: str, limit: int = 5):
     """Get recent meetings with a given status."""
     meetings = get_meetings_by_status(status)
     return meetings[:limit]
+
+
+def get_timing_stats() -> dict:
+    """Get average timing statistics for each pipeline stage."""
+    timing = {}
+
+    with get_db() as conn:
+        # Transcription times (from database)
+        result = conn.execute('''
+            SELECT AVG(processing_time_seconds) as avg_time,
+                   COUNT(*) as count,
+                   MIN(processing_time_seconds) as min_time,
+                   MAX(processing_time_seconds) as max_time
+            FROM transcripts
+            WHERE processing_time_seconds IS NOT NULL
+        ''').fetchone()
+
+        if result and result["count"] > 0 and result["avg_time"]:
+            timing["transcription"] = {
+                "avg": result["avg_time"],
+                "min": result["min_time"],
+                "max": result["max_time"],
+                "count": result["count"],
+            }
+
+        # Count validated meetings to estimate validation time
+        validated_count = conn.execute(
+            "SELECT COUNT(DISTINCT clip_id) as count FROM transcription_validation"
+        ).fetchone()["count"]
+
+        # Count analyzed meetings
+        analyzed_count = conn.execute(
+            "SELECT COUNT(DISTINCT clip_id) as count FROM analysis"
+        ).fetchone()["count"]
+
+    # Estimated times based on observations (these are approximations)
+    # Download: ~3-5 min per meeting (depends on duration)
+    timing["download"] = {"avg": 240, "note": "~4 min avg"}
+
+    # Validation: ~5-10 min per meeting (Tier 1 + Tier 2)
+    timing["validation"] = {"avg": 420, "count": validated_count, "note": "~7 min avg"}
+
+    # Diarization: ~3-5 min per meeting
+    timing["diarization"] = {"avg": 240, "note": "~4 min avg"}
+
+    # Analysis: ~10-15 min per meeting (depends on segments)
+    timing["analysis"] = {"avg": 720, "count": analyzed_count, "note": "~12 min avg"}
+
+    return timing
+
+
+def create_timing_table() -> Table:
+    """Create timing statistics table."""
+    timing = get_timing_stats()
+
+    table = Table(
+        title="Avg Time per Meeting",
+        box=box.ROUNDED,
+        show_header=True,
+        header_style="bold magenta",
+    )
+
+    table.add_column("Stage", style="bold")
+    table.add_column("Avg", justify="right")
+    table.add_column("Range", justify="right", style="dim")
+
+    # Download
+    table.add_row("Download", "~4 min", "-")
+
+    # Transcription (actual data)
+    if "transcription" in timing:
+        t = timing["transcription"]
+        avg_min = t["avg"] / 60
+        min_min = t["min"] / 60
+        max_min = t["max"] / 60
+        table.add_row(
+            f"Transcription ({t['count']})",
+            f"{avg_min:.0f} min",
+            f"{min_min:.0f}-{max_min:.0f} min"
+        )
+    else:
+        table.add_row("Transcription", "~40 min", "-")
+
+    # Validation
+    v = timing.get("validation", {})
+    count = v.get("count", 0)
+    table.add_row(f"Validation ({count})", "~7 min", "-")
+
+    # Diarization
+    table.add_row("Diarization", "~4 min", "-")
+
+    # Analysis
+    a = timing.get("analysis", {})
+    count = a.get("count", 0)
+    table.add_row(f"Analysis ({count})", "~12 min", "-")
+
+    return table
 
 
 def create_status_table(stats: dict) -> Table:
@@ -223,8 +320,12 @@ def create_dashboard():
     """Create the full dashboard as a simple printable format."""
     stats = get_processing_stats()
 
-    # Top row: Summary + Disk Usage
-    top_row = Columns([create_summary_panel(stats), create_disk_usage_table()], equal=True)
+    # Top row: Summary + Disk Usage + Timing
+    top_row = Columns([
+        create_summary_panel(stats),
+        create_disk_usage_table(),
+        create_timing_table()
+    ], equal=True)
 
     # Status table
     status = create_status_table(stats)
