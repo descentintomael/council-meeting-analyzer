@@ -417,9 +417,19 @@ def export_members(all_votes: list[dict]) -> dict:
 
 
 def export_alignment(all_votes: list[dict]) -> dict:
-    """Calculate and export voting alignment between council members."""
-    # Build a map of (vote_id) -> {member: vote}
+    """Calculate and export voting alignment between council members.
+
+    Enhanced to track:
+    - Member tenure (first and last vote dates)
+    - Number of shared votes between each pair
+    - Only show alignment for members with overlapping service
+    """
+    # Build a map of (vote_id) -> {member: vote, date: meeting_date}
     vote_records = defaultdict(dict)
+    vote_dates = {}  # vote_id -> date
+
+    # Track each member's vote dates for tenure calculation
+    member_vote_dates = defaultdict(list)
 
     for vote in all_votes:
         individual_votes = vote.get("votes", {})
@@ -428,23 +438,43 @@ def export_alignment(all_votes: list[dict]) -> dict:
 
         # Create unique vote identifier
         vote_id = f"{vote.get('meetingId')}_{vote.get('motion', '')[:50]}"
+        meeting_date = vote.get("meetingDate")
+        vote_dates[vote_id] = meeting_date
 
         for member_name, member_vote in individual_votes.items():
             normalized_name = normalize_member_name(member_name)
             if normalized_name:
                 vote_records[vote_id][normalized_name] = normalize_vote(member_vote)
+                if meeting_date:
+                    member_vote_dates[normalized_name].append(meeting_date)
 
-    # Calculate pairwise alignment
+    # Calculate member tenures
+    member_tenures = {}
+    for member, dates in member_vote_dates.items():
+        if dates:
+            sorted_dates = sorted(dates)
+            member_tenures[member] = {
+                "firstVote": sorted_dates[0],
+                "lastVote": sorted_dates[-1],
+                "voteCount": len(dates),
+            }
+
+    # Calculate pairwise alignment with shared vote counts
     all_members = set()
     for votes in vote_records.values():
         all_members.update(votes.keys())
 
     alignment_matrix = {}
+    shared_votes_matrix = {}  # Track number of shared votes for each pair
+
     for member1 in sorted(all_members):
         alignment_matrix[member1] = {}
+        shared_votes_matrix[member1] = {}
+
         for member2 in sorted(all_members):
             if member1 == member2:
                 alignment_matrix[member1][member2] = 100.0
+                shared_votes_matrix[member1][member2] = member_tenures.get(member1, {}).get("voteCount", 0)
                 continue
 
             # Count votes where both members voted
@@ -460,21 +490,46 @@ def export_alignment(all_votes: list[dict]) -> dict:
                         if v1 == v2:
                             same_vote += 1
 
+            shared_votes_matrix[member1][member2] = total_shared
+
             if total_shared >= 5:  # Minimum 5 shared votes for meaningful alignment
                 alignment_matrix[member1][member2] = round(same_vote / total_shared * 100, 1)
             else:
                 alignment_matrix[member1][member2] = None
 
+    # Identify the current council (members active in the most recent year)
+    all_dates = [d for dates in member_vote_dates.values() for d in dates if d]
+    if all_dates:
+        most_recent = max(all_dates)
+        # Consider "current" as anyone who voted in the last year
+        from datetime import datetime, timedelta
+        try:
+            recent_cutoff = datetime.fromisoformat(most_recent) - timedelta(days=365)
+            recent_cutoff_str = recent_cutoff.strftime("%Y-%m-%d")
+        except:
+            recent_cutoff_str = most_recent[:4] + "-01-01"  # Fallback to start of year
+
+        current_members = [
+            m for m, tenure in member_tenures.items()
+            if tenure.get("lastVote", "") >= recent_cutoff_str
+        ]
+    else:
+        current_members = list(all_members)
+
     # Write alignment.json
     alignment_path = OUTPUT_DIR / "alignment.json"
     alignment_data = {
         "matrix": alignment_matrix,
+        "sharedVotes": shared_votes_matrix,
         "members": sorted(all_members),
+        "currentMembers": sorted(current_members),
+        "tenures": member_tenures,
         "minSharedVotes": 5,
     }
     with open(alignment_path, "w") as f:
         json.dump(alignment_data, f, indent=2)
     print(f"Exported voting alignment for {len(all_members)} members to {alignment_path}")
+    print(f"  - {len(current_members)} members active in past year")
 
     return alignment_data
 

@@ -5,13 +5,27 @@ import alignmentData from '../data/alignment.json';
 // Ensure base URL ends with /
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
 
-const { matrix, members } = alignmentData;
+const { matrix, sharedVotes, members, currentMembers, tenures, minSharedVotes } = alignmentData;
 
-// Filter to members with meaningful data (at least some alignment scores)
-const activeMembers = members.filter((m: string) => {
-  const scores = Object.values(matrix[m] || {}).filter((s: any) => s !== null && s !== 100);
-  return scores.length >= 3;
+// Filter to members with sufficient voting data (at least 10 votes total)
+const MIN_VOTES_FOR_INCLUSION = 10;
+const qualifiedMembers = members.filter((m: string) => {
+  const tenure = tenures[m];
+  return tenure && tenure.voteCount >= MIN_VOTES_FOR_INCLUSION;
 });
+
+// Current council members (active in past year, qualified)
+const currentCouncil = currentMembers.filter((m: string) => qualifiedMembers.includes(m));
+
+// Historical members (not current, but qualified)
+const historicalMembers = qualifiedMembers.filter((m: string) => !currentMembers.includes(m));
+
+// Format date for display
+function formatDate(dateStr: string): string {
+  if (!dateStr) return 'Unknown';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+}
 
 // Get color class based on alignment percentage
 function getAlignmentColor(percent: number | null): string {
@@ -23,167 +37,269 @@ function getAlignmentColor(percent: number | null): string {
   return 'bg-error text-error-content';
 }
 
-// Get alignment label
+// Get alignment label with shared vote count tooltip info
 function getAlignmentLabel(percent: number | null): string {
-  if (percent === null) return 'N/A';
-  if (percent === 100) return '-';
+  if (percent === null) return '—';
+  if (percent === 100) return '—';
   return `${Math.round(percent)}%`;
 }
+
+// Calculate notable pairs for a given member set
+function getNotablePairs(memberSet: string[], isHighest: boolean) {
+  const pairs: { member1: string; member2: string; percent: number; shared: number }[] = [];
+  for (const m1 of memberSet) {
+    for (const m2 of memberSet) {
+      if (m1 < m2 && matrix[m1]?.[m2] !== null && matrix[m1]?.[m2] !== 100) {
+        pairs.push({
+          member1: m1,
+          member2: m2,
+          percent: matrix[m1][m2],
+          shared: sharedVotes[m1]?.[m2] || 0
+        });
+      }
+    }
+  }
+  pairs.sort((a, b) => isHighest ? b.percent - a.percent : a.percent - b.percent);
+  return pairs.slice(0, 5);
+}
+
+const mostAlignedCurrent = getNotablePairs(currentCouncil, true);
+const leastAlignedCurrent = getNotablePairs(currentCouncil, false);
 ---
 
 <BaseLayout title="Voting Alignment">
   <!-- Back navigation -->
-  <a href={`${base}members`} class="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary mb-4 group">
+  <a href={`${base}members`} class="inline-flex items-center gap-2 text-sm text-base-content/50 hover:text-primary mb-6 group">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
     </svg>
-    Back to Members
+    Council Members
   </a>
 
   <header class="mb-8">
     <h1 class="text-2xl md:text-3xl font-bold text-base-content mb-2">
-      Voting Alignment Matrix
+      Voting Alignment
     </h1>
-    <p class="text-base-content/70 max-w-2xl">
-      How often do council members vote the same way? This matrix shows the percentage of shared
-      votes where two members voted identically. Higher percentages indicate more aligned voting patterns.
+    <p class="text-base-content/60 max-w-2xl">
+      How often do council members vote the same way? Only members who served together are compared.
     </p>
   </header>
 
-  <!-- Legend -->
-  <div class="flex flex-wrap gap-4 mb-6 text-sm">
-    <div class="flex items-center gap-2">
-      <span class="w-6 h-6 rounded bg-success"></span>
-      <span>90%+ (Very aligned)</span>
+  <!-- Current Council Section -->
+  <section class="mb-12">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-base-content">Current Council</h2>
+      <span class="text-sm text-base-content/50">{currentCouncil.length} members</span>
     </div>
-    <div class="flex items-center gap-2">
-      <span class="w-6 h-6 rounded bg-info"></span>
-      <span>75-89% (Often aligned)</span>
-    </div>
-    <div class="flex items-center gap-2">
-      <span class="w-6 h-6 rounded bg-warning"></span>
-      <span>60-74% (Sometimes aligned)</span>
-    </div>
-    <div class="flex items-center gap-2">
-      <span class="w-6 h-6 rounded bg-error"></span>
-      <span>&lt;60% (Rarely aligned)</span>
-    </div>
-    <div class="flex items-center gap-2">
-      <span class="w-6 h-6 rounded bg-base-300"></span>
-      <span>Insufficient data</span>
-    </div>
-  </div>
 
-  <!-- Alignment matrix table -->
-  <div class="overflow-x-auto bg-base-200 rounded-box border border-base-300">
-    <table class="table table-compact w-full">
-      <thead>
-        <tr>
-          <th class="bg-base-300 sticky left-0 z-10"></th>
-          {activeMembers.map((member: string) => (
-            <th class="text-center text-xs font-medium bg-base-300 px-2 py-3 min-w-[60px]">
-              <a href={`${base}members/${encodeURIComponent(member)}`} class="hover:text-primary">
-                {member.split(' ').pop()}
-              </a>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {activeMembers.map((member1: string) => (
+    <!-- Member tenure chips -->
+    <div class="flex flex-wrap gap-2 mb-6">
+      {currentCouncil.map((member: string) => {
+        const tenure = tenures[member];
+        return (
+          <a
+            href={`${base}members/${encodeURIComponent(member)}`}
+            class="inline-flex items-center gap-2 px-3 py-1.5 bg-base-200 hover:bg-base-300 rounded-full text-sm transition-colors"
+          >
+            <span class="font-medium">{member}</span>
+            <span class="text-base-content/50 text-xs">
+              {formatDate(tenure?.firstVote)} – present
+            </span>
+          </a>
+        );
+      })}
+    </div>
+
+    <!-- Legend -->
+    <div class="flex flex-wrap gap-4 mb-4 text-xs text-base-content/70">
+      <div class="flex items-center gap-1.5">
+        <span class="w-4 h-4 rounded bg-success"></span>
+        <span>90%+ aligned</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-4 h-4 rounded bg-info"></span>
+        <span>75-89%</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-4 h-4 rounded bg-warning"></span>
+        <span>60-74%</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-4 h-4 rounded bg-error"></span>
+        <span>&lt;60%</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-4 h-4 rounded bg-base-300"></span>
+        <span>No overlap</span>
+      </div>
+    </div>
+
+    <!-- Current council alignment matrix -->
+    <div class="overflow-x-auto bg-base-200 rounded-lg border border-base-300">
+      <table class="table table-compact w-full">
+        <thead>
           <tr>
-            <th class="font-medium text-sm bg-base-300 sticky left-0 z-10 whitespace-nowrap">
-              <a href={`${base}members/${encodeURIComponent(member1)}`} class="hover:text-primary">
-                {member1}
-              </a>
-            </th>
-            {activeMembers.map((member2: string) => {
-              const alignment = matrix[member1]?.[member2];
-              return (
-                <td class={`text-center text-xs font-medium p-2 ${getAlignmentColor(alignment)}`}>
-                  {getAlignmentLabel(alignment)}
-                </td>
-              );
-            })}
+            <th class="bg-base-300 sticky left-0 z-10 text-xs"></th>
+            {currentCouncil.map((member: string) => (
+              <th class="text-center text-xs font-medium bg-base-300 px-2 py-3 min-w-[56px]">
+                <a href={`${base}members/${encodeURIComponent(member)}`} class="hover:text-primary">
+                  {member}
+                </a>
+              </th>
+            ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          {currentCouncil.map((member1: string) => (
+            <tr>
+              <th class="font-medium text-sm bg-base-300 sticky left-0 z-10 whitespace-nowrap py-2">
+                <a href={`${base}members/${encodeURIComponent(member1)}`} class="hover:text-primary">
+                  {member1}
+                </a>
+              </th>
+              {currentCouncil.map((member2: string) => {
+                const alignment = matrix[member1]?.[member2];
+                const shared = sharedVotes[member1]?.[member2] || 0;
+                const title = alignment !== null && alignment !== 100
+                  ? `${member1} & ${member2}: ${Math.round(alignment)}% aligned over ${shared} votes`
+                  : member1 === member2 ? 'Self' : 'No shared votes';
+                return (
+                  <td
+                    class={`text-center text-xs font-medium p-2 ${getAlignmentColor(alignment)}`}
+                    title={title}
+                  >
+                    {getAlignmentLabel(alignment)}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
 
-  <!-- Notes -->
-  <div class="mt-6 bg-base-200 rounded-box p-4 border border-base-300">
-    <h3 class="font-semibold text-base-content mb-2">How to Read This Matrix</h3>
-    <ul class="text-sm text-base-content/80 space-y-1">
-      <li>Each cell shows the percentage of votes where both members voted the same way (yes/yes or no/no).</li>
-      <li>Only votes where both members participated are counted.</li>
-      <li>Members with fewer than {alignmentData.minSharedVotes} shared votes show "N/A".</li>
-      <li>Diagonal cells ("-") represent self-comparison.</li>
-    </ul>
-  </div>
-
-  <!-- Top alignments -->
-  <div class="mt-8">
-    <h2 class="text-xl font-semibold text-base-content mb-4">Notable Voting Pairs</h2>
-    <div class="grid gap-4 md:grid-cols-2">
-      <!-- Most aligned -->
-      <div class="bg-base-200 rounded-box p-4 border border-base-300">
-        <h3 class="font-semibold text-success mb-3">Most Aligned</h3>
-        <ul class="space-y-2">
-          {(() => {
-            const pairs: { member1: string; member2: string; percent: number }[] = [];
-            for (const m1 of activeMembers) {
-              for (const m2 of activeMembers) {
-                if (m1 < m2 && matrix[m1]?.[m2] !== null && matrix[m1]?.[m2] !== 100) {
-                  pairs.push({ member1: m1, member2: m2, percent: matrix[m1][m2] });
-                }
-              }
-            }
-            return pairs
-              .sort((a, b) => b.percent - a.percent)
-              .slice(0, 5)
-              .map(pair => (
+    <!-- Notable pairs for current council -->
+    {(mostAlignedCurrent.length > 0 || leastAlignedCurrent.length > 0) && (
+      <div class="grid gap-4 md:grid-cols-2 mt-6">
+        {mostAlignedCurrent.length > 0 && (
+          <div class="bg-base-200 rounded-lg p-4 border border-base-300">
+            <h3 class="font-medium text-success mb-3 text-sm">Most Aligned Pairs</h3>
+            <ul class="space-y-2">
+              {mostAlignedCurrent.map(pair => (
                 <li class="flex justify-between text-sm">
-                  <span>{pair.member1} & {pair.member2}</span>
+                  <span class="text-base-content/80">{pair.member1} & {pair.member2}</span>
                   <span class="font-medium text-success">{Math.round(pair.percent)}%</span>
                 </li>
-              ));
-          })()}
-        </ul>
-      </div>
+              ))}
+            </ul>
+          </div>
+        )}
 
-      <!-- Least aligned -->
-      <div class="bg-base-200 rounded-box p-4 border border-base-300">
-        <h3 class="font-semibold text-error mb-3">Least Aligned</h3>
-        <ul class="space-y-2">
-          {(() => {
-            const pairs: { member1: string; member2: string; percent: number }[] = [];
-            for (const m1 of activeMembers) {
-              for (const m2 of activeMembers) {
-                if (m1 < m2 && matrix[m1]?.[m2] !== null && matrix[m1]?.[m2] !== 100) {
-                  pairs.push({ member1: m1, member2: m2, percent: matrix[m1][m2] });
-                }
-              }
-            }
-            return pairs
-              .sort((a, b) => a.percent - b.percent)
-              .slice(0, 5)
-              .map(pair => (
+        {leastAlignedCurrent.length > 0 && (
+          <div class="bg-base-200 rounded-lg p-4 border border-base-300">
+            <h3 class="font-medium text-error mb-3 text-sm">Least Aligned Pairs</h3>
+            <ul class="space-y-2">
+              {leastAlignedCurrent.map(pair => (
                 <li class="flex justify-between text-sm">
-                  <span>{pair.member1} & {pair.member2}</span>
+                  <span class="text-base-content/80">{pair.member1} & {pair.member2}</span>
                   <span class="font-medium text-error">{Math.round(pair.percent)}%</span>
                 </li>
-              ));
-          })()}
-        </ul>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
-    </div>
-  </div>
+    )}
+  </section>
 
-  <!-- Link back to members -->
-  <div class="mt-8 text-center">
-    <a href={`${base}members`} class="btn btn-outline btn-primary">
-      View Individual Voting Records
-    </a>
+  <!-- Historical Members Section -->
+  {historicalMembers.length > 0 && (
+    <section>
+      <details class="group">
+        <summary class="flex items-center justify-between cursor-pointer mb-4 p-4 bg-base-200 rounded-lg border border-base-300 hover:bg-base-300/50 transition-colors">
+          <div>
+            <h2 class="text-lg font-semibold text-base-content">Historical Members</h2>
+            <p class="text-sm text-base-content/50">{historicalMembers.length} former members with voting records</p>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-base-content/50 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </summary>
+
+        <!-- Historical member list with tenures -->
+        <div class="space-y-2 mb-6">
+          {historicalMembers.map((member: string) => {
+            const tenure = tenures[member];
+            return (
+              <a
+                href={`${base}members/${encodeURIComponent(member)}`}
+                class="flex items-center justify-between p-3 bg-base-200 hover:bg-base-300/50 rounded-lg border border-base-300 transition-colors"
+              >
+                <span class="font-medium">{member}</span>
+                <div class="text-sm text-base-content/50">
+                  <span>{formatDate(tenure?.firstVote)} – {formatDate(tenure?.lastVote)}</span>
+                  <span class="ml-3">{tenure?.voteCount} votes</span>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+
+        <!-- Historical alignment matrix -->
+        <div class="overflow-x-auto bg-base-200 rounded-lg border border-base-300">
+          <table class="table table-compact w-full">
+            <thead>
+              <tr>
+                <th class="bg-base-300 sticky left-0 z-10 text-xs"></th>
+                {historicalMembers.map((member: string) => (
+                  <th class="text-center text-xs font-medium bg-base-300 px-2 py-3 min-w-[56px]">
+                    <a href={`${base}members/${encodeURIComponent(member)}`} class="hover:text-primary">
+                      {member}
+                    </a>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {historicalMembers.map((member1: string) => (
+                <tr>
+                  <th class="font-medium text-sm bg-base-300 sticky left-0 z-10 whitespace-nowrap py-2">
+                    <a href={`${base}members/${encodeURIComponent(member1)}`} class="hover:text-primary">
+                      {member1}
+                    </a>
+                  </th>
+                  {historicalMembers.map((member2: string) => {
+                    const alignment = matrix[member1]?.[member2];
+                    const shared = sharedVotes[member1]?.[member2] || 0;
+                    const title = alignment !== null && alignment !== 100
+                      ? `${member1} & ${member2}: ${Math.round(alignment)}% aligned over ${shared} votes`
+                      : member1 === member2 ? 'Self' : 'No shared votes';
+                    return (
+                      <td
+                        class={`text-center text-xs font-medium p-2 ${getAlignmentColor(alignment)}`}
+                        title={title}
+                      >
+                        {getAlignmentLabel(alignment)}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+  )}
+
+  <!-- How to read section -->
+  <div class="mt-8 bg-base-200 rounded-lg p-4 border border-base-300">
+    <h3 class="font-medium text-base-content mb-2">How to Read This</h3>
+    <ul class="text-sm text-base-content/70 space-y-1">
+      <li>Each cell shows how often two members voted the same way (yes-yes or no-no).</li>
+      <li>Hover over a cell to see the number of shared votes.</li>
+      <li>Members who didn't serve together show "—" (no overlap).</li>
+      <li>Minimum {minSharedVotes} shared votes required for a percentage.</li>
+    </ul>
   </div>
 </BaseLayout>
