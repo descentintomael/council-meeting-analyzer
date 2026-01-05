@@ -16,215 +16,165 @@ interface Props {
 }
 
 const { meeting } = Astro.props;
-// Ensure base URL ends with /
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
 
-// Get recent meetings (excluding current, sorted by date)
+// Get recent meetings for sidebar
 const recentMeetings = meetingsData.meetings
   .filter(m => m.id !== meeting.id)
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   .slice(0, 5);
 
-// Format date
+// Format dates
 const formattedDate = meeting.date ? new Date(meeting.date).toLocaleDateString('en-US', {
   weekday: 'long',
-  year: 'numeric',
   month: 'long',
-  day: 'numeric'
+  day: 'numeric',
+  year: 'numeric'
 }) : 'Date unknown';
 
-// Short date format for recent meetings
 function formatShortDate(date: string | null): string {
   if (!date) return 'Unknown';
-  return new Date(date).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
+  return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-// Format duration
 function formatDuration(seconds: number | null): string {
-  if (!seconds) return 'Unknown';
+  if (!seconds) return '';
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
-  if (hours > 0) return `${hours}h ${minutes}m`;
-  return `${minutes}m`;
+  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes} min`;
 }
 
-// Get transcript quality rating based on WER
-function getQualityRating(werScore: number | null | undefined): { label: string; color: string; description: string } {
-  if (werScore === null || werScore === undefined) {
-    return { label: 'Unverified', color: 'badge-ghost', description: 'Quality not measured' };
-  }
-  // WER is word error rate - lower is better
-  // Accuracy = 1 - WER
-  const accuracy = 1 - werScore;
-  if (accuracy >= 0.90) {
-    return { label: 'High', color: 'badge-success', description: `~${Math.round(accuracy * 100)}% accurate` };
-  } else if (accuracy >= 0.75) {
-    return { label: 'Good', color: 'badge-info', description: `~${Math.round(accuracy * 100)}% accurate` };
-  } else if (accuracy >= 0.60) {
-    return { label: 'Fair', color: 'badge-warning', description: `~${Math.round(accuracy * 100)}% accurate` };
-  }
-  return { label: 'Review', color: 'badge-error', description: `~${Math.round(accuracy * 100)}% accurate` };
-}
-
-const quality = getQualityRating(meeting.werScore);
+// Summary display config
+const INITIAL_SUMMARY_COUNT = 7;
+const showSummaryExpander = meeting.summary.length > INITIAL_SUMMARY_COUNT;
+const initialSummary = meeting.summary.slice(0, INITIAL_SUMMARY_COUNT);
+const remainingSummary = meeting.summary.slice(INITIAL_SUMMARY_COUNT);
 ---
 
 <BaseLayout title={meeting.title}>
-  <!-- Back navigation -->
-  <a href={base} class="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary mb-4 group">
+  <!-- Simple back navigation -->
+  <a href={base} class="inline-flex items-center gap-2 text-sm text-base-content/50 hover:text-primary mb-6 group">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
     </svg>
-    Back to Meetings
+    All Meetings
   </a>
 
-  <!-- Breadcrumbs navigation -->
-  <nav class="breadcrumbs text-sm mb-4" aria-label="Breadcrumb">
-    <ul class="flex flex-wrap items-center gap-2">
-      <li>
-        <a href={base} class="link link-hover text-base-content/60 hover:text-primary">
-          All Meetings
-        </a>
-      </li>
-      <li class="text-base-content/40">/</li>
-      <li>
-        <a href={`${base}?type=${encodeURIComponent(meeting.type || '')}`} class="link link-hover text-base-content/60 hover:text-primary">
-          {meeting.type || 'Unknown'}
-        </a>
-      </li>
-      <li class="text-base-content/40">/</li>
-      <li class="text-base-content truncate max-w-[200px] sm:max-w-xs" aria-current="page">
-        {meeting.title}
-      </li>
-    </ul>
-  </nav>
-
-  <!-- Meeting header -->
+  <!-- Meeting header - clean and focused -->
   <header class="mb-8">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <div>
-        <h1 class="text-2xl md:text-3xl font-bold text-base-content mb-2">
+    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <div class="flex-1">
+        <h1 class="text-2xl md:text-3xl font-bold text-base-content mb-2 leading-tight">
           {meeting.title}
         </h1>
-        <div class="flex flex-wrap items-center gap-3 text-base-content/60">
-          <span>{formattedDate}</span>
-          <span class="badge badge-outline badge-primary">{meeting.type}</span>
-          {meeting.duration && (
-            <span class="text-sm">{formatDuration(meeting.duration)}</span>
-          )}
-        </div>
+        <p class="text-base-content/60">
+          {formattedDate}
+          {meeting.duration && <span class="text-base-content/40"> · {formatDuration(meeting.duration)}</span>}
+        </p>
       </div>
-      <div class="flex flex-wrap gap-2">
-        {meeting.videoUrl && (
-          <a
-            href={meeting.videoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn btn-primary btn-sm min-h-11"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Watch Video
-          </a>
-        )}
-        {meeting.transcript && (
-          <a
-            href={`${base}transcripts/${meeting.id}.txt`}
-            download
-            class="btn btn-ghost btn-sm min-h-11"
-            title="Download transcript as text file"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            Download
-          </a>
-        )}
-      </div>
-    </div>
 
-    <!-- Topics -->
-    {meeting.topics.length > 0 && (
-      <div class="flex flex-wrap gap-2 mt-4">
-        {meeting.topics.map(topic => (
-          <span class="badge badge-ghost">{topic}</span>
-        ))}
-      </div>
-    )}
+      <!-- Single action button -->
+      {meeting.videoUrl && (
+        <a
+          href={meeting.videoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary btn-sm shrink-0"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Watch Recording
+        </a>
+      )}
+    </div>
   </header>
 
   <div class="grid gap-8 lg:grid-cols-3">
-    <!-- Main content - constrained width for readability -->
-    <div class="lg:col-span-2 space-y-8 max-w-3xl">
-      <!-- Summary -->
+    <!-- Main content -->
+    <div class="lg:col-span-2 space-y-8">
+
+      <!-- Summary - with expander for long lists -->
       {meeting.summary.length > 0 && (
         <section>
-          <h2 class="text-xl font-semibold text-base-content mb-4 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            Summary
-          </h2>
-          <div class="bg-base-200 rounded-box p-4 border border-base-300">
-            <ul class="space-y-2">
-              {meeting.summary.map(bullet => (
-                <li class="flex gap-2 text-sm">
-                  <span class="text-primary shrink-0">•</span>
-                  <span>{bullet}</span>
+          <h2 class="text-lg font-semibold text-base-content mb-4">Key Points</h2>
+          <div class="bg-base-200 rounded-lg p-5 border border-base-300">
+            <ul class="space-y-2.5" id="summary-list">
+              {initialSummary.map((bullet, i) => (
+                <li class="flex gap-3 text-sm leading-relaxed">
+                  <span class="text-primary/60 shrink-0 mt-0.5">•</span>
+                  <span class="text-base-content/80">{bullet}</span>
                 </li>
               ))}
             </ul>
+
+            {showSummaryExpander && (
+              <details class="mt-3">
+                <summary class="text-sm text-primary cursor-pointer hover:underline">
+                  Show {remainingSummary.length} more points
+                </summary>
+                <ul class="space-y-2.5 mt-3 pt-3 border-t border-base-300">
+                  {remainingSummary.map(bullet => (
+                    <li class="flex gap-3 text-sm leading-relaxed">
+                      <span class="text-primary/60 shrink-0 mt-0.5">•</span>
+                      <span class="text-base-content/80">{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
           </div>
         </section>
       )}
 
       <!-- Votes -->
-      <section>
-        <h2 class="text-xl font-semibold text-base-content mb-4 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-          </svg>
-          Votes ({meeting.votes?.length || 0})
-        </h2>
-        <div class="bg-base-200 rounded-box border border-base-300 overflow-hidden">
-          <VoteTable votes={meeting.votes || []} />
-        </div>
-      </section>
+      {meeting.votes && meeting.votes.length > 0 && (
+        <section>
+          <h2 class="text-lg font-semibold text-base-content mb-4">
+            Votes
+            <span class="text-base-content/40 font-normal ml-2">({meeting.votes.length})</span>
+          </h2>
+          <div class="bg-base-200 rounded-lg border border-base-300 overflow-hidden">
+            <VoteTable votes={meeting.votes} />
+          </div>
+        </section>
+      )}
 
       <!-- Transcript -->
       {(meeting.diarizedTranscript || meeting.transcript) && (
         <section>
-          <h2 class="text-xl font-semibold text-base-content mb-4 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Full Transcript
-            {meeting.diarizedTranscript && (
-              <span class="badge badge-sm badge-primary">Speaker Annotated</span>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-base-content">
+              Transcript
+              {meeting.diarizedTranscript && (
+                <span class="text-xs font-normal text-base-content/50 ml-2">with speaker IDs</span>
+              )}
+            </h2>
+            {meeting.transcript && (
+              <a
+                href={`${base}transcripts/${meeting.id}.txt`}
+                download
+                class="text-sm text-primary hover:underline flex items-center gap-1"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download
+              </a>
             )}
-          </h2>
-          <details class="bg-base-200 rounded-box border border-base-300">
-            <summary class="p-4 cursor-pointer hover:bg-base-300 transition-colors font-medium">
-              {meeting.diarizedTranscript
-                ? `Click to expand (${meeting.diarizedTranscript.length.toLocaleString()} speaker segments)`
-                : `Click to expand transcript (${Math.round((meeting.transcript?.length || 0) / 1000)}k characters)`
-              }
+          </div>
+
+          <details class="bg-base-200 rounded-lg border border-base-300 group">
+            <summary class="p-4 cursor-pointer hover:bg-base-300/50 transition-colors text-sm text-base-content/70">
+              Click to expand full transcript
             </summary>
             <div class="p-4 pt-0 border-t border-base-300">
-              <div
-                class="max-h-[600px] overflow-y-auto"
-                data-pagefind-body
-              >
+              <div class="max-h-[500px] overflow-y-auto" data-pagefind-body>
                 {meeting.diarizedTranscript ? (
                   <SpeakerTranscript segments={meeting.diarizedTranscript} videoUrl={meeting.videoUrl} />
                 ) : (
-                  <div class="prose prose-sm prose-invert max-w-none text-base-content/80">
+                  <div class="prose prose-sm max-w-none text-base-content/70">
                     {meeting.transcript?.split('\n\n').map(paragraph => (
                       <p class="mb-3">{paragraph}</p>
                     ))}
@@ -233,92 +183,58 @@ const quality = getQualityRating(meeting.werScore);
               </div>
             </div>
           </details>
+
+          <p class="text-xs text-base-content/40 mt-2">
+            AI-generated transcript. May contain errors.
+          </p>
         </section>
       )}
     </div>
 
-    <!-- Sidebar -->
+    <!-- Sidebar - simplified -->
     <aside class="space-y-6">
-      <!-- Quick stats -->
-      <div class="bg-base-200 rounded-box p-4 border border-base-300">
-        <h3 class="font-semibold text-base-content mb-3">Meeting Info</h3>
-        <dl class="space-y-2 text-sm">
-          <div class="flex justify-between">
-            <dt class="text-base-content/60">Date</dt>
-            <dd>{meeting.date || 'Unknown'}</dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="text-base-content/60">Type</dt>
-            <dd>{meeting.type || 'Unknown'}</dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="text-base-content/60">Duration</dt>
-            <dd>{formatDuration(meeting.duration)}</dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="text-base-content/60">Votes</dt>
-            <dd>{meeting.votes?.length || 0}</dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="text-base-content/60">Summary Points</dt>
-            <dd>{meeting.summary.length}</dd>
-          </div>
-          <div class="flex justify-between items-center">
-            <dt class="text-base-content/60">Transcript Quality</dt>
-            <dd>
-              <span class={`badge badge-sm ${quality.color}`} title={quality.description}>
-                {quality.label}
-              </span>
-            </dd>
-          </div>
-        </dl>
-        {meeting.werScore && (
-          <p class="text-xs text-base-content/50 mt-3">
-            {quality.description}. AI-generated transcripts may contain errors.
-          </p>
-        )}
-      </div>
-
-      <!-- Video link -->
-      {meeting.videoUrl && (
-        <div class="bg-base-200 rounded-box p-4 border border-base-300">
-          <h3 class="font-semibold text-base-content mb-3">Watch Recording</h3>
-          <a
-            href={meeting.videoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn btn-primary btn-block btn-sm min-h-11"
-          >
-            Open in Granicus
-          </a>
-        </div>
-      )}
-
-      <!-- Recent meetings -->
-      <div class="bg-base-200 rounded-box p-4 border border-base-300">
-        <h3 class="font-semibold text-base-content mb-3">Recent Meetings</h3>
-        <ul class="space-y-3">
+      <!-- Recent meetings only -->
+      <div class="bg-base-200 rounded-lg p-4 border border-base-300">
+        <h3 class="text-sm font-medium text-base-content/70 mb-3">Recent Meetings</h3>
+        <ul class="space-y-2">
           {recentMeetings.map(m => (
             <li>
               <a
                 href={`${base}meetings/${m.id}`}
-                class="block hover:bg-base-300 -mx-2 px-2 py-1 rounded transition-colors"
+                class="block hover:bg-base-300/50 -mx-2 px-2 py-1.5 rounded transition-colors"
               >
-                <div class="text-sm font-medium text-base-content line-clamp-1">
-                  {m.type}
-                </div>
-                <div class="text-xs text-base-content/60">
-                  {formatShortDate(m.date)}
-                </div>
+                <div class="text-sm text-base-content line-clamp-1">{m.title}</div>
+                <div class="text-xs text-base-content/50">{formatShortDate(m.date)}</div>
               </a>
             </li>
           ))}
         </ul>
-        <a
-          href={base}
-          class="btn btn-ghost btn-sm btn-block mt-3 min-h-11"
-        >
-          View all meetings
+      </div>
+
+      <!-- Topics if present -->
+      {meeting.topics.length > 0 && (
+        <div class="bg-base-200 rounded-lg p-4 border border-base-300">
+          <h3 class="text-sm font-medium text-base-content/70 mb-3">Topics Discussed</h3>
+          <div class="flex flex-wrap gap-1.5">
+            {meeting.topics.map(topic => (
+              <a
+                href={`${base}topics/${encodeURIComponent(topic)}`}
+                class="text-xs px-2 py-1 bg-base-300 hover:bg-primary/20 hover:text-primary rounded transition-colors"
+              >
+                {topic}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Quick links -->
+      <div class="text-sm space-y-2">
+        <a href={`${base}members`} class="block text-base-content/60 hover:text-primary transition-colors">
+          → View council members
+        </a>
+        <a href={`${base}topics`} class="block text-base-content/60 hover:text-primary transition-colors">
+          → Browse by topic
         </a>
       </div>
     </aside>
@@ -326,8 +242,14 @@ const quality = getQualityRating(meeting.werScore);
 </BaseLayout>
 
 <style>
-  /* Pagefind metadata */
   [data-pagefind-body] {
     --pagefind-body: true;
+  }
+
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 </style>

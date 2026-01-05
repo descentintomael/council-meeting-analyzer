@@ -45,13 +45,15 @@ const dateRange = meetingsData.metadata.dateRange;
 // Get the latest meeting for the summary section
 const latestMeeting = meetingsData.meetings[0];
 
-// Format date for latest meeting
+// Format date for latest meeting - shorter format
 const latestMeetingDate = latestMeeting?.date ? new Date(latestMeeting.date).toLocaleDateString('en-US', {
-  weekday: 'long',
-  month: 'long',
+  month: 'short',
   day: 'numeric',
   year: 'numeric'
 }) : null;
+
+// Get a clean single highlight from latest meeting
+const latestHighlight = latestMeeting?.summary?.[0]?.replace(/^[-•]\s*/, '').trim() || null;
 
 // Preserve params for pagination links
 const preserveParams: Record<string, string> = {};
@@ -59,77 +61,36 @@ if (selectedType) preserveParams.type = selectedType;
 ---
 
 <BaseLayout title="Meeting Archive">
-  <!-- Hero section with search -->
-  <section class="bg-base-200 rounded-box p-4 sm:p-6 md:p-8 mb-6 sm:mb-8 text-center">
-    <!-- Disclaimer badge -->
-    <div class="badge badge-outline badge-sm mb-3 sm:mb-4 text-base-content/60">
+  <!-- Hero section with search - cleaner -->
+  <section class="bg-base-200 rounded-box p-6 md:p-8 mb-6 text-center">
+    <p class="text-xs text-base-content/50 mb-3 uppercase tracking-wide">
       Unofficial &bull; Independent Research Project
-    </div>
-    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-base-content mb-3 sm:mb-4">
+    </p>
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-base-content mb-3">
       Chico City Council Archive
     </h1>
-    <p class="text-base sm:text-lg text-base-content/70 mb-4 sm:mb-6 max-w-2xl mx-auto px-2 sm:px-0">
-      Search and browse {totalMeetings} council meetings from {dateRange.start} to {dateRange.end}.
-      Full transcripts, voting records, and AI-generated summaries.
+    <p class="text-base-content/60 mb-5 max-w-xl mx-auto">
+      Search {totalMeetings} meetings with full transcripts and voting records.
     </p>
     <HeroSearch />
-    <p class="text-xs text-base-content/50 mt-3 sm:mt-4">
-      Not affiliated with the City of Chico &bull; <a href={`${base}about`} class="link link-hover">Learn more</a>
-    </p>
   </section>
 
-  <!-- Latest meeting summary -->
+  <!-- Latest meeting - simplified to single line with expand -->
   {latestMeeting && (
-    <section class="bg-base-200 rounded-box p-4 sm:p-6 mb-6 sm:mb-8 border border-base-300">
-      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <div class="flex-1">
-          <div class="flex items-center gap-2 mb-2">
-            <span class="badge badge-primary badge-sm">Latest Meeting</span>
-            <span class="text-sm text-base-content/60">{latestMeetingDate}</span>
-          </div>
-          <h2 class="text-lg font-semibold text-base-content mb-2">
-            <a href={`${base}meetings/${latestMeeting.id}`} class="hover:text-primary transition-colors">
-              {latestMeeting.title}
-            </a>
-          </h2>
-          {latestMeeting.summary.length > 0 && (
-            <ul class="text-sm text-base-content/80 space-y-1 mb-3">
-              {latestMeeting.summary.slice(0, 3).map((point: string) => (
-                <li class="flex gap-2">
-                  <span class="text-primary shrink-0">•</span>
-                  <span class="line-clamp-1">{point}</span>
-                </li>
-              ))}
-              {latestMeeting.summary.length > 3 && (
-                <li class="text-base-content/60 text-xs">
-                  +{latestMeeting.summary.length - 3} more points
-                </li>
-              )}
-            </ul>
-          )}
-          {latestMeeting.votes && latestMeeting.votes.length > 0 && (
-            <p class="text-sm text-base-content/60">
-              {latestMeeting.votes.length} vote{latestMeeting.votes.length !== 1 ? 's' : ''} recorded
-            </p>
-          )}
-        </div>
-        <div class="flex gap-2 shrink-0">
-          <a href={`${base}meetings/${latestMeeting.id}`} class="btn btn-primary btn-sm min-h-10">
-            View Details
-          </a>
-          {latestMeeting.videoUrl && (
-            <a
-              href={latestMeeting.videoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn btn-ghost btn-sm min-h-10"
-            >
-              Watch Video
-            </a>
-          )}
-        </div>
+    <a
+      href={`${base}meetings/${latestMeeting.id}`}
+      class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 bg-base-200/50 hover:bg-base-200 rounded-lg px-4 py-3 mb-6 border border-base-300/50 hover:border-primary/30 transition-colors group"
+    >
+      <div class="flex items-center gap-3 min-w-0">
+        <span class="badge badge-primary badge-sm shrink-0">Latest</span>
+        <span class="text-sm font-medium text-base-content truncate group-hover:text-primary transition-colors">
+          {latestMeeting.title}
+        </span>
       </div>
-    </section>
+      <span class="text-xs text-base-content/50 shrink-0 sm:text-right">
+        {latestMeetingDate}
+      </span>
+    </a>
   )}
 
   <!-- Filter chips -->
@@ -139,19 +100,19 @@ if (selectedType) preserveParams.type = selectedType;
     totalCount={totalMeetings}
   />
 
-  <!-- Results count -->
-  <div class="flex justify-between items-center mb-4">
-    <p class="text-sm text-base-content/60">
+  <!-- Results count - more subtle -->
+  <div class="mb-4">
+    <p class="text-xs text-base-content/50">
       {selectedType
-        ? `Showing ${filteredMeetings.length} ${selectedType} meeting${filteredMeetings.length !== 1 ? 's' : ''}`
-        : `Showing ${paginatedMeetings.length} of ${filteredMeetings.length} meetings`
+        ? `${filteredMeetings.length} ${selectedType} meeting${filteredMeetings.length !== 1 ? 's' : ''}`
+        : `${filteredMeetings.length} meetings`
       }
-      {totalPages > 1 && ` (page ${validPage} of ${totalPages})`}
+      {totalPages > 1 && ` · Page ${validPage} of ${totalPages}`}
     </p>
   </div>
 
-  <!-- Meeting grid -->
-  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+  <!-- Meeting grid - more gap for breathing room -->
+  <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
     {paginatedMeetings.map(meeting => (
       <MeetingCard
         id={meeting.id}
@@ -160,9 +121,6 @@ if (selectedType) preserveParams.type = selectedType;
         type={meeting.type || 'Unknown'}
         summary={meeting.summary}
         voteCount={meeting.votes?.length || 0}
-        topics={meeting.topics}
-        werScore={meeting.werScore}
-        hasDiarization={Boolean(meeting.diarizedTranscript)}
       />
     ))}
   </div>
@@ -170,7 +128,7 @@ if (selectedType) preserveParams.type = selectedType;
   {filteredMeetings.length === 0 && (
     <div class="text-center py-12">
       <p class="text-base-content/60">No meetings found matching your filters.</p>
-      <a href={base} class="btn btn-primary btn-sm min-h-11 mt-4">Clear filters</a>
+      <a href={base} class="btn btn-primary btn-sm mt-4">Clear filters</a>
     </div>
   )}
 

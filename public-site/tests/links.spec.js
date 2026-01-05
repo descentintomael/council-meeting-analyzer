@@ -34,7 +34,7 @@ test.describe('Site Navigation', () => {
     await expect(page).toHaveURL(/\/meetings\/\d+/);
 
     // Click back link
-    await page.locator('a:has-text("Back to meetings")').click();
+    await page.locator('a:has-text("All Meetings")').click();
     await expect(page).toHaveURL(/\/council-meeting-analyzer\/?$/);
   });
 
@@ -74,7 +74,7 @@ test.describe('Meeting Page Content', () => {
 
     // Check for key sections (use heading role for specificity)
     await expect(page.locator('h1')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Summary' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Key Points' })).toBeVisible();
     await expect(page.getByRole('heading', { name: /Votes/ })).toBeVisible();
   });
 
@@ -82,7 +82,7 @@ test.describe('Meeting Page Content', () => {
     await page.goto(BASE_URL);
     await page.locator('a[href*="/meetings/"]').first().click();
 
-    const videoLink = page.locator('a:has-text("Watch Video")');
+    const videoLink = page.locator('a:has-text("Watch Recording")');
     if (await videoLink.count() > 0) {
       const href = await videoLink.getAttribute('href');
       expect(href).toMatch(/^https?:\/\//);
