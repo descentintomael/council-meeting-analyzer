@@ -1,0 +1,110 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import membersData from '../../data/members.json';
+
+// Ensure base URL ends with /
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+
+// Sort members by total votes (most active first)
+const members = Object.values(membersData)
+  .filter((m: any) => m.totalVotes >= 10) // Only show members with meaningful vote counts
+  .sort((a: any, b: any) => b.totalVotes - a.totalVotes);
+
+// Get vote color class
+function getVoteColorClass(yesPercent: number): string {
+  if (yesPercent >= 90) return 'text-success';
+  if (yesPercent >= 70) return 'text-info';
+  if (yesPercent >= 50) return 'text-warning';
+  return 'text-error';
+}
+---
+
+<BaseLayout title="Council Members">
+  <!-- Back navigation -->
+  <a href={base} class="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary mb-4 group">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    Back to Meetings
+  </a>
+
+  <header class="mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-base-content mb-2">
+      Council Members
+    </h1>
+    <p class="text-base-content/70">
+      Voting records and statistics for Chico City Council members.
+      Click on a member to see their full voting history.
+    </p>
+  </header>
+
+  <!-- Members grid -->
+  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    {members.map((member: any) => (
+      <a
+        href={`${base}members/${encodeURIComponent(member.name)}`}
+        class="card bg-base-200 hover:bg-base-300 transition-colors border border-base-300 hover:border-primary/50"
+      >
+        <div class="card-body p-4">
+          <h3 class="card-title text-lg font-semibold text-base-content">
+            {member.name}
+          </h3>
+
+          <!-- Stats -->
+          <div class="grid grid-cols-2 gap-4 mt-3">
+            <div>
+              <div class="text-2xl font-bold text-primary">{member.totalVotes}</div>
+              <div class="text-xs text-base-content/60">Total Votes</div>
+            </div>
+            <div>
+              <div class={`text-2xl font-bold ${getVoteColorClass(member.yesPercent)}`}>
+                {member.yesPercent}%
+              </div>
+              <div class="text-xs text-base-content/60">Yes Votes</div>
+            </div>
+          </div>
+
+          <!-- Vote breakdown bar -->
+          <div class="mt-3">
+            <div class="flex h-2 rounded-full overflow-hidden bg-base-300">
+              <div
+                class="bg-success"
+                style={`width: ${member.yesPercent}%`}
+                title={`${member.yesVotes} yes votes`}
+              />
+              <div
+                class="bg-error"
+                style={`width: ${100 - member.yesPercent - (member.abstainVotes / member.totalVotes * 100)}%`}
+                title={`${member.noVotes} no votes`}
+              />
+            </div>
+            <div class="flex justify-between text-xs text-base-content/60 mt-1">
+              <span>{member.yesVotes} yes</span>
+              <span>{member.noVotes} no</span>
+            </div>
+          </div>
+
+          <!-- With majority indicator -->
+          {member.withMajorityPercent > 0 && (
+            <div class="mt-2 text-sm text-base-content/70">
+              Votes with majority: <span class="font-medium">{member.withMajorityPercent}%</span>
+            </div>
+          )}
+        </div>
+      </a>
+    ))}
+  </div>
+
+  {members.length === 0 && (
+    <div class="text-center py-12">
+      <p class="text-base-content/60">No council member data available.</p>
+    </div>
+  )}
+
+  <!-- Link to voting alignment -->
+  <div class="mt-8 text-center">
+    <a href={`${base}voting-alignment`} class="btn btn-outline btn-primary">
+      View Voting Alignment Matrix
+    </a>
+  </div>
+</BaseLayout>

@@ -7,7 +7,7 @@ test.describe('Site Navigation', () => {
   test('homepage loads successfully', async ({ page }) => {
     const response = await page.goto(BASE_URL);
     expect(response.status()).toBe(200);
-    await expect(page.locator('h1')).toContainText('Chico City Council Meetings');
+    await expect(page.locator('h1')).toContainText('Chico City Council Archive');
   });
 
   test('meeting cards link to meeting pages', async ({ page }) => {
@@ -53,9 +53,17 @@ test.describe('Site Navigation', () => {
   test('nav links work', async ({ page }) => {
     await page.goto(BASE_URL);
 
-    // Test Meetings nav link
-    const meetingsLink = page.locator('header a:has-text("Meetings")');
+    // Test Meetings nav link (use first() for desktop nav, there's also one in mobile dropdown)
+    const meetingsLink = page.locator('header nav a:has-text("Meetings")').first();
     await expect(meetingsLink).toHaveAttribute('href', /\/council-meeting-analyzer\//);
+
+    // Test Members nav link
+    const membersLink = page.locator('header nav a:has-text("Members")');
+    await expect(membersLink).toHaveAttribute('href', /\/council-meeting-analyzer\/members/);
+
+    // Test Topics nav link
+    const topicsLink = page.locator('header nav a:has-text("Topics")');
+    await expect(topicsLink).toHaveAttribute('href', /\/council-meeting-analyzer\/topics/);
   });
 });
 

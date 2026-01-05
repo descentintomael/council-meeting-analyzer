@@ -1,0 +1,267 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import membersData from '../../data/members.json';
+
+export function getStaticPaths() {
+  return Object.values(membersData).map((member: any) => ({
+    params: { name: member.name },
+    props: { member }
+  }));
+}
+
+interface Vote {
+  motion: string;
+  vote: string;
+  result: string;
+  meetingId: number;
+  meetingDate: string;
+  meetingTitle: string;
+  withMajority: boolean | null;
+}
+
+interface Member {
+  name: string;
+  totalVotes: number;
+  yesVotes: number;
+  noVotes: number;
+  abstainVotes: number;
+  yesPercent: number;
+  withMajorityPercent: number;
+  votes: Vote[];
+}
+
+const { member } = Astro.props as { member: Member };
+
+// Ensure base URL ends with /
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+
+// Sort votes by date (most recent first)
+const sortedVotes = [...member.votes].sort((a, b) =>
+  new Date(b.meetingDate).getTime() - new Date(a.meetingDate).getTime()
+);
+
+// Group votes by meeting
+const votesByMeeting: Record<number, { title: string; date: string; votes: Vote[] }> = {};
+for (const vote of sortedVotes) {
+  if (!votesByMeeting[vote.meetingId]) {
+    votesByMeeting[vote.meetingId] = {
+      title: vote.meetingTitle,
+      date: vote.meetingDate,
+      votes: []
+    };
+  }
+  votesByMeeting[vote.meetingId].votes.push(vote);
+}
+
+const meetingIds = Object.keys(votesByMeeting)
+  .map(Number)
+  .sort((a, b) => new Date(votesByMeeting[b].date).getTime() - new Date(votesByMeeting[a].date).getTime());
+
+// Format date
+function formatDate(date: string): string {
+  if (!date) return 'Unknown';
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
+// Get vote badge color
+function getVoteBadgeClass(vote: string): string {
+  if (vote === 'yes') return 'badge-success';
+  if (vote === 'no') return 'badge-error';
+  if (vote === 'abstain') return 'badge-warning';
+  return 'badge-ghost';
+}
+
+// Get result color
+function getResultClass(result: string): string {
+  const r = result.toLowerCase();
+  if (r.includes('passed') || r.includes('approved')) return 'text-success';
+  if (r.includes('failed') || r.includes('denied')) return 'text-error';
+  return 'text-base-content/60';
+}
+---
+
+<BaseLayout title={`${member.name} - Voting Record`}>
+  <!-- Back navigation -->
+  <a href={`${base}members`} class="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary mb-4 group">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    Back to Members
+  </a>
+
+  <!-- Member header -->
+  <header class="mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-base-content mb-2">
+      {member.name}
+    </h1>
+    <p class="text-base-content/70">
+      Voting record from the Chico City Council
+    </p>
+  </header>
+
+  <div class="grid gap-8 lg:grid-cols-3">
+    <!-- Main content -->
+    <div class="lg:col-span-2">
+      <!-- Voting history by meeting -->
+      <h2 class="text-xl font-semibold text-base-content mb-4">
+        Voting History ({member.totalVotes} votes)
+      </h2>
+
+      <div class="space-y-4">
+        {meetingIds.map(meetingId => {
+          const meeting = votesByMeeting[meetingId];
+          return (
+            <div class="bg-base-200 rounded-box border border-base-300">
+              <div class="p-4 border-b border-base-300">
+                <a
+                  href={`${base}meetings/${meetingId}`}
+                  class="font-medium text-primary hover:underline"
+                >
+                  {meeting.title}
+                </a>
+                <div class="text-sm text-base-content/60">
+                  {formatDate(meeting.date)}
+                </div>
+              </div>
+              <div class="divide-y divide-base-300">
+                {meeting.votes.map(vote => (
+                  <div class="p-4 flex flex-col sm:flex-row sm:items-start gap-3">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm text-base-content line-clamp-2">
+                        {vote.motion || 'Motion not recorded'}
+                      </p>
+                      <p class={`text-xs mt-1 ${getResultClass(vote.result)}`}>
+                        {vote.result}
+                      </p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                      <span class={`badge ${getVoteBadgeClass(vote.vote)}`}>
+                        {vote.vote.toUpperCase()}
+                      </span>
+                      {vote.withMajority !== null && (
+                        <span class="text-xs text-base-content/60" title={vote.withMajority ? 'Voted with majority' : 'Voted against majority'}>
+                          {vote.withMajority ? '✓' : '✗'}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Sidebar with stats -->
+    <aside class="space-y-6">
+      <!-- Statistics card -->
+      <div class="bg-base-200 rounded-box p-4 border border-base-300">
+        <h3 class="font-semibold text-base-content mb-4">Voting Statistics</h3>
+
+        <!-- Vote breakdown -->
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-success">Yes Votes</span>
+              <span class="font-medium">{member.yesVotes} ({member.yesPercent}%)</span>
+            </div>
+            <div class="h-2 bg-base-300 rounded-full overflow-hidden">
+              <div class="h-full bg-success" style={`width: ${member.yesPercent}%`} />
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-error">No Votes</span>
+              <span class="font-medium">{member.noVotes} ({Math.round(member.noVotes / member.totalVotes * 100)}%)</span>
+            </div>
+            <div class="h-2 bg-base-300 rounded-full overflow-hidden">
+              <div class="h-full bg-error" style={`width: ${member.noVotes / member.totalVotes * 100}%`} />
+            </div>
+          </div>
+
+          {member.abstainVotes > 0 && (
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-warning">Abstain</span>
+                <span class="font-medium">{member.abstainVotes} ({Math.round(member.abstainVotes / member.totalVotes * 100)}%)</span>
+              </div>
+              <div class="h-2 bg-base-300 rounded-full overflow-hidden">
+                <div class="h-full bg-warning" style={`width: ${member.abstainVotes / member.totalVotes * 100}%`} />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <!-- Majority alignment -->
+        <div class="mt-4 pt-4 border-t border-base-300">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-base-content/70">With Majority</span>
+            <span class="font-medium text-primary">{member.withMajorityPercent}%</span>
+          </div>
+          <p class="text-xs text-base-content/60 mt-1">
+            Percentage of time voting with the winning side
+          </p>
+        </div>
+
+        <!-- Total votes -->
+        <div class="mt-4 pt-4 border-t border-base-300">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-base-content/70">Total Votes</span>
+            <span class="text-2xl font-bold text-primary">{member.totalVotes}</span>
+          </div>
+          <p class="text-xs text-base-content/60 mt-1">
+            Across {meetingIds.length} meetings
+          </p>
+        </div>
+      </div>
+
+      <!-- Other members -->
+      <div class="bg-base-200 rounded-box p-4 border border-base-300">
+        <h3 class="font-semibold text-base-content mb-3">Other Members</h3>
+        <div class="space-y-2">
+          {Object.values(membersData)
+            .filter((m: any) => m.name !== member.name && m.totalVotes >= 10)
+            .sort((a: any, b: any) => b.totalVotes - a.totalVotes)
+            .slice(0, 5)
+            .map((m: any) => (
+              <a
+                href={`${base}members/${encodeURIComponent(m.name)}`}
+                class="block hover:bg-base-300 -mx-2 px-2 py-1 rounded transition-colors"
+              >
+                <div class="text-sm font-medium text-base-content">
+                  {m.name}
+                </div>
+                <div class="text-xs text-base-content/60">
+                  {m.totalVotes} votes
+                </div>
+              </a>
+            ))
+          }
+        </div>
+        <a href={`${base}members`} class="btn btn-ghost btn-sm btn-block mt-3 min-h-11">
+          View all members
+        </a>
+      </div>
+
+      <!-- Link to alignment -->
+      <a href={`${base}voting-alignment`} class="btn btn-outline btn-primary btn-block">
+        View Voting Alignment
+      </a>
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

@@ -7,9 +7,11 @@ interface Props {
   summary: string[];
   voteCount: number;
   topics: string[];
+  werScore?: number | null;
+  hasDiarization?: boolean;
 }
 
-const { id, title, date, type, summary, voteCount, topics } = Astro.props;
+const { id, title, date, type, summary, voteCount, topics, werScore, hasDiarization } = Astro.props;
 // Ensure base URL ends with /
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
 
@@ -23,6 +25,22 @@ const formattedDate = date ? new Date(date).toLocaleDateString('en-US', {
 
 // Get first summary bullet as preview
 const previewText = summary.length > 0 ? summary[0] : 'No summary available';
+
+// Get quality indicator
+function getQualityBadge(wer: number | null | undefined): { icon: string; color: string; title: string } | null {
+  if (wer === null || wer === undefined) return null;
+  const accuracy = 1 - wer;
+  if (accuracy >= 0.90) {
+    return { icon: '●', color: 'text-success', title: `High quality (~${Math.round(accuracy * 100)}% accurate)` };
+  } else if (accuracy >= 0.75) {
+    return { icon: '◐', color: 'text-info', title: `Good quality (~${Math.round(accuracy * 100)}% accurate)` };
+  } else if (accuracy >= 0.60) {
+    return { icon: '○', color: 'text-warning', title: `Fair quality (~${Math.round(accuracy * 100)}% accurate)` };
+  }
+  return { icon: '○', color: 'text-error', title: `Needs review (~${Math.round(accuracy * 100)}% accurate)` };
+}
+
+const qualityBadge = getQualityBadge(werScore);
 ---
 
 <a href={`${base}meetings/${id}`} class="card bg-base-200 hover:bg-base-300 transition-colors border border-base-300 hover:border-primary/50">
@@ -64,6 +82,16 @@ const previewText = summary.length > 0 ? summary[0] : 'No summary available';
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
             </svg>
             {summary.length} point{summary.length !== 1 ? 's' : ''}
+          </span>
+        )}
+        {qualityBadge && (
+          <span class={`flex items-center gap-1 ${qualityBadge.color}`} title={qualityBadge.title}>
+            {qualityBadge.icon}
+          </span>
+        )}
+        {hasDiarization && (
+          <span class="badge badge-xs badge-primary" title="Has speaker annotations">
+            Speakers
           </span>
         )}
       </div>

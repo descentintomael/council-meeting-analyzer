@@ -42,6 +42,17 @@ const paginatedMeetings = filteredMeetings.slice(
 const totalMeetings = meetingsData.metadata.totalMeetings;
 const dateRange = meetingsData.metadata.dateRange;
 
+// Get the latest meeting for the summary section
+const latestMeeting = meetingsData.meetings[0];
+
+// Format date for latest meeting
+const latestMeetingDate = latestMeeting?.date ? new Date(latestMeeting.date).toLocaleDateString('en-US', {
+  weekday: 'long',
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric'
+}) : null;
+
 // Preserve params for pagination links
 const preserveParams: Record<string, string> = {};
 if (selectedType) preserveParams.type = selectedType;
@@ -66,6 +77,60 @@ if (selectedType) preserveParams.type = selectedType;
       Not affiliated with the City of Chico &bull; <a href={`${base}about`} class="link link-hover">Learn more</a>
     </p>
   </section>
+
+  <!-- Latest meeting summary -->
+  {latestMeeting && (
+    <section class="bg-base-200 rounded-box p-4 sm:p-6 mb-6 sm:mb-8 border border-base-300">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="badge badge-primary badge-sm">Latest Meeting</span>
+            <span class="text-sm text-base-content/60">{latestMeetingDate}</span>
+          </div>
+          <h2 class="text-lg font-semibold text-base-content mb-2">
+            <a href={`${base}meetings/${latestMeeting.id}`} class="hover:text-primary transition-colors">
+              {latestMeeting.title}
+            </a>
+          </h2>
+          {latestMeeting.summary.length > 0 && (
+            <ul class="text-sm text-base-content/80 space-y-1 mb-3">
+              {latestMeeting.summary.slice(0, 3).map((point: string) => (
+                <li class="flex gap-2">
+                  <span class="text-primary shrink-0">•</span>
+                  <span class="line-clamp-1">{point}</span>
+                </li>
+              ))}
+              {latestMeeting.summary.length > 3 && (
+                <li class="text-base-content/60 text-xs">
+                  +{latestMeeting.summary.length - 3} more points
+                </li>
+              )}
+            </ul>
+          )}
+          {latestMeeting.votes && latestMeeting.votes.length > 0 && (
+            <p class="text-sm text-base-content/60">
+              {latestMeeting.votes.length} vote{latestMeeting.votes.length !== 1 ? 's' : ''} recorded
+            </p>
+          )}
+        </div>
+        <div class="flex gap-2 shrink-0">
+          <a href={`${base}meetings/${latestMeeting.id}`} class="btn btn-primary btn-sm min-h-10">
+            View Details
+          </a>
+          {latestMeeting.videoUrl && (
+            <a
+              href={latestMeeting.videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-ghost btn-sm min-h-10"
+            >
+              Watch Video
+            </a>
+          )}
+        </div>
+      </div>
+    </section>
+  )}
 
   <!-- Filter chips -->
   <FilterBar
@@ -96,6 +161,8 @@ if (selectedType) preserveParams.type = selectedType;
         summary={meeting.summary}
         voteCount={meeting.votes?.length || 0}
         topics={meeting.topics}
+        werScore={meeting.werScore}
+        hasDiarization={Boolean(meeting.diarizedTranscript)}
       />
     ))}
   </div>

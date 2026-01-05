@@ -51,6 +51,26 @@ function formatDuration(seconds: number | null): string {
   if (hours > 0) return `${hours}h ${minutes}m`;
   return `${minutes}m`;
 }
+
+// Get transcript quality rating based on WER
+function getQualityRating(werScore: number | null | undefined): { label: string; color: string; description: string } {
+  if (werScore === null || werScore === undefined) {
+    return { label: 'Unverified', color: 'badge-ghost', description: 'Quality not measured' };
+  }
+  // WER is word error rate - lower is better
+  // Accuracy = 1 - WER
+  const accuracy = 1 - werScore;
+  if (accuracy >= 0.90) {
+    return { label: 'High', color: 'badge-success', description: `~${Math.round(accuracy * 100)}% accurate` };
+  } else if (accuracy >= 0.75) {
+    return { label: 'Good', color: 'badge-info', description: `~${Math.round(accuracy * 100)}% accurate` };
+  } else if (accuracy >= 0.60) {
+    return { label: 'Fair', color: 'badge-warning', description: `~${Math.round(accuracy * 100)}% accurate` };
+  }
+  return { label: 'Review', color: 'badge-error', description: `~${Math.round(accuracy * 100)}% accurate` };
+}
+
+const quality = getQualityRating(meeting.werScore);
 ---
 
 <BaseLayout title={meeting.title}>
@@ -98,20 +118,35 @@ function formatDuration(seconds: number | null): string {
           )}
         </div>
       </div>
-      {meeting.videoUrl && (
-        <a
-          href={meeting.videoUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn btn-primary btn-sm min-h-11"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Watch Video
-        </a>
-      )}
+      <div class="flex flex-wrap gap-2">
+        {meeting.videoUrl && (
+          <a
+            href={meeting.videoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary btn-sm min-h-11"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Watch Video
+          </a>
+        )}
+        {meeting.transcript && (
+          <a
+            href={`${base}transcripts/${meeting.id}.txt`}
+            download
+            class="btn btn-ghost btn-sm min-h-11"
+            title="Download transcript as text file"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download
+          </a>
+        )}
+      </div>
     </div>
 
     <!-- Topics -->
@@ -187,7 +222,7 @@ function formatDuration(seconds: number | null): string {
                 data-pagefind-body
               >
                 {meeting.diarizedTranscript ? (
-                  <SpeakerTranscript segments={meeting.diarizedTranscript} />
+                  <SpeakerTranscript segments={meeting.diarizedTranscript} videoUrl={meeting.videoUrl} />
                 ) : (
                   <div class="prose prose-sm prose-invert max-w-none text-base-content/80">
                     {meeting.transcript?.split('\n\n').map(paragraph => (
@@ -228,7 +263,20 @@ function formatDuration(seconds: number | null): string {
             <dt class="text-base-content/60">Summary Points</dt>
             <dd>{meeting.summary.length}</dd>
           </div>
+          <div class="flex justify-between items-center">
+            <dt class="text-base-content/60">Transcript Quality</dt>
+            <dd>
+              <span class={`badge badge-sm ${quality.color}`} title={quality.description}>
+                {quality.label}
+              </span>
+            </dd>
+          </div>
         </dl>
+        {meeting.werScore && (
+          <p class="text-xs text-base-content/50 mt-3">
+            {quality.description}. AI-generated transcripts may contain errors.
+          </p>
+        )}
       </div>
 
       <!-- Video link -->

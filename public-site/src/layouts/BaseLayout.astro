@@ -29,9 +29,33 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
             Chico Council Archive
           </a>
         </div>
-        <div class="flex-none gap-1 sm:gap-2 flex-shrink-0">
-          <a href={base} class="btn btn-ghost btn-sm min-h-11 px-2 sm:px-3">Meetings</a>
-          <a href={`${base}about`} class="btn btn-ghost btn-sm min-h-11 px-2 sm:px-3">About</a>
+        <div class="flex-none gap-1 flex-shrink-0">
+          <!-- Desktop nav -->
+          <nav class="hidden md:flex gap-1">
+            <a href={base} class="btn btn-ghost btn-sm min-h-11 px-3">Meetings</a>
+            <a href={`${base}members`} class="btn btn-ghost btn-sm min-h-11 px-3">Members</a>
+            <a href={`${base}topics`} class="btn btn-ghost btn-sm min-h-11 px-3">Topics</a>
+            <a href={`${base}stats`} class="btn btn-ghost btn-sm min-h-11 px-3">Stats</a>
+            <a href={`${base}data`} class="btn btn-ghost btn-sm min-h-11 px-3">Data</a>
+            <a href={`${base}about`} class="btn btn-ghost btn-sm min-h-11 px-3">About</a>
+          </nav>
+          <!-- Mobile nav dropdown -->
+          <div class="dropdown dropdown-end md:hidden">
+            <label tabindex="0" class="btn btn-ghost btn-sm min-h-11 px-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </label>
+            <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-base-200 rounded-box w-52 border border-base-300 mt-2 z-50">
+              <li><a href={base}>Meetings</a></li>
+              <li><a href={`${base}members`}>Council Members</a></li>
+              <li><a href={`${base}topics`}>Topics</a></li>
+              <li><a href={`${base}voting-alignment`}>Voting Alignment</a></li>
+              <li><a href={`${base}stats`}>Statistics</a></li>
+              <li><a href={`${base}data`}>Download Data</a></li>
+              <li><a href={`${base}about`}>About</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </header>
@@ -68,5 +92,99 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
 
   main {
     flex: 1;
+  }
+
+  /* Print-friendly styles */
+  @media print {
+    /* Hide navigation and footer */
+    header.navbar,
+    footer.footer {
+      display: none !important;
+    }
+
+    /* Reset background colors for print */
+    body,
+    main,
+    .bg-base-100,
+    .bg-base-200,
+    .bg-base-300 {
+      background: white !important;
+      color: black !important;
+    }
+
+    /* Hide interactive elements */
+    .btn,
+    button,
+    .badge,
+    .filter-bar,
+    .pagination,
+    details > summary,
+    a[href*="granicus"] {
+      display: none !important;
+    }
+
+    /* Show details content */
+    details {
+      display: block !important;
+    }
+    details[open] > div {
+      display: block !important;
+    }
+
+    /* Clean typography */
+    .text-base-content,
+    .text-base-content\/60,
+    .text-base-content\/70,
+    .text-base-content\/80 {
+      color: black !important;
+    }
+
+    /* Remove borders and shadows */
+    .border,
+    .border-base-300,
+    .rounded-box {
+      border: 1px solid #ddd !important;
+      box-shadow: none !important;
+    }
+
+    /* Ensure links are visible */
+    a {
+      color: black !important;
+      text-decoration: underline !important;
+    }
+
+    /* Meeting title styling */
+    h1, h2, h3 {
+      color: black !important;
+      page-break-after: avoid;
+    }
+
+    /* Keep content together */
+    .card, section {
+      page-break-inside: avoid;
+    }
+
+    /* Show sidebar content inline */
+    aside {
+      display: none !important;
+    }
+
+    /* Full width for main content */
+    .lg\:col-span-2 {
+      grid-column: 1 / -1 !important;
+    }
+
+    /* Expand transcript for printing */
+    .max-h-\[600px\] {
+      max-height: none !important;
+      overflow: visible !important;
+    }
+
+    /* Print URL after external links */
+    a[href^="http"]:after {
+      content: " (" attr(href) ")";
+      font-size: 0.8em;
+      color: #666;
+    }
   }
 </style>

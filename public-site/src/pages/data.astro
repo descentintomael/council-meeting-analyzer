@@ -1,0 +1,206 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import meetingsData from '../data/meetings.json';
+import statisticsData from '../data/statistics.json';
+
+// Ensure base URL ends with /
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+
+const { metadata } = meetingsData;
+const { overview } = statisticsData;
+---
+
+<BaseLayout title="Data Downloads">
+  <!-- Back navigation -->
+  <a href={base} class="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary mb-4 group">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    Back to Meetings
+  </a>
+
+  <header class="mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-base-content mb-2">
+      Data Downloads
+    </h1>
+    <p class="text-base-content/70 max-w-2xl">
+      Download meeting data in various formats for research, analysis, or archiving.
+      All data is derived from public city council meetings.
+    </p>
+  </header>
+
+  <!-- Data overview -->
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+    <div class="bg-base-200 rounded-box p-4 border border-base-300">
+      <div class="text-2xl font-bold text-primary">{overview.totalMeetings}</div>
+      <div class="text-sm text-base-content/60">Total Meetings</div>
+    </div>
+    <div class="bg-base-200 rounded-box p-4 border border-base-300">
+      <div class="text-2xl font-bold text-primary">{overview.totalVotes}</div>
+      <div class="text-sm text-base-content/60">Vote Records</div>
+    </div>
+    <div class="bg-base-200 rounded-box p-4 border border-base-300">
+      <div class="text-2xl font-bold text-primary">{overview.diarizedMeetings}</div>
+      <div class="text-sm text-base-content/60">Speaker-Annotated</div>
+    </div>
+    <div class="bg-base-200 rounded-box p-4 border border-base-300">
+      <div class="text-2xl font-bold text-primary">{metadata.dateRange.start} - {metadata.dateRange.end}</div>
+      <div class="text-sm text-base-content/60">Date Range</div>
+    </div>
+  </div>
+
+  <!-- Download options -->
+  <div class="grid gap-6 md:grid-cols-2">
+    <!-- CSV Downloads -->
+    <div class="bg-base-200 rounded-box p-6 border border-base-300">
+      <h2 class="text-xl font-semibold text-base-content mb-4 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        CSV Files
+      </h2>
+      <p class="text-sm text-base-content/70 mb-4">
+        Spreadsheet-compatible format. Open in Excel, Google Sheets, or any data analysis tool.
+      </p>
+
+      <div class="space-y-3">
+        <a
+          href={`${base}data/meetings.csv`}
+          download
+          class="flex items-center justify-between p-3 bg-base-300 rounded-lg hover:bg-base-100 transition-colors"
+        >
+          <div>
+            <div class="font-medium text-base-content">meetings.csv</div>
+            <div class="text-xs text-base-content/60">Meeting metadata, dates, types, durations</div>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+        </a>
+
+        <a
+          href={`${base}data/votes.csv`}
+          download
+          class="flex items-center justify-between p-3 bg-base-300 rounded-lg hover:bg-base-100 transition-colors"
+        >
+          <div>
+            <div class="font-medium text-base-content">votes.csv</div>
+            <div class="text-xs text-base-content/60">All vote records with motions and outcomes</div>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- JSON Downloads -->
+    <div class="bg-base-200 rounded-box p-6 border border-base-300">
+      <h2 class="text-xl font-semibold text-base-content mb-4 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-info" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+        </svg>
+        JSON Files
+      </h2>
+      <p class="text-sm text-base-content/70 mb-4">
+        Structured data format for developers. Use in applications, scripts, or further analysis.
+      </p>
+
+      <div class="space-y-3">
+        <a
+          href={`${base}data/meetings.json`}
+          download="meetings.json"
+          class="flex items-center justify-between p-3 bg-base-300 rounded-lg hover:bg-base-100 transition-colors"
+        >
+          <div>
+            <div class="font-medium text-base-content">meetings.json</div>
+            <div class="text-xs text-base-content/60">Complete meeting data with summaries and votes</div>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+        </a>
+
+        <a
+          href={`${base}data/statistics.json`}
+          download="statistics.json"
+          class="flex items-center justify-between p-3 bg-base-300 rounded-lg hover:bg-base-100 transition-colors"
+        >
+          <div>
+            <div class="font-medium text-base-content">statistics.json</div>
+            <div class="text-xs text-base-content/60">Pre-calculated statistics and trends</div>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+        </a>
+
+        <a
+          href={`${base}data/members.json`}
+          download="members.json"
+          class="flex items-center justify-between p-3 bg-base-300 rounded-lg hover:bg-base-100 transition-colors"
+        >
+          <div>
+            <div class="font-medium text-base-content">members.json</div>
+            <div class="text-xs text-base-content/60">Council member voting records</div>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+        </a>
+
+        <a
+          href={`${base}data/alignment.json`}
+          download="alignment.json"
+          class="flex items-center justify-between p-3 bg-base-300 rounded-lg hover:bg-base-100 transition-colors"
+        >
+          <div>
+            <div class="font-medium text-base-content">alignment.json</div>
+            <div class="text-xs text-base-content/60">Voting alignment matrix between members</div>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+        </a>
+
+        <a
+          href={`${base}data/topics.json`}
+          download="topics.json"
+          class="flex items-center justify-between p-3 bg-base-300 rounded-lg hover:bg-base-100 transition-colors"
+        >
+          <div>
+            <div class="font-medium text-base-content">topics.json</div>
+            <div class="text-xs text-base-content/60">Topic aggregations across meetings</div>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Individual transcripts note -->
+  <div class="mt-8 bg-base-200 rounded-box p-6 border border-base-300">
+    <h2 class="text-xl font-semibold text-base-content mb-4">Individual Transcripts</h2>
+    <p class="text-base-content/70 mb-4">
+      Download individual meeting transcripts from each meeting's detail page using the
+      "Download" button. Transcripts are available as plain text files.
+    </p>
+    <a href={base} class="btn btn-outline btn-primary btn-sm">
+      Browse Meetings
+    </a>
+  </div>
+
+  <!-- Data usage notes -->
+  <div class="mt-8 bg-warning/10 rounded-box p-6 border border-warning/30">
+    <h3 class="font-semibold text-warning mb-2">Data Usage Notice</h3>
+    <ul class="text-sm text-base-content/80 space-y-1">
+      <li>This data is provided for research and educational purposes.</li>
+      <li>Transcripts are AI-generated and may contain errors.</li>
+      <li>Vote records are extracted automatically and should be verified for official use.</li>
+      <li>This is an unofficial project not affiliated with the City of Chico.</li>
+      <li>Last updated: {metadata.exportedAt}</li>
+    </ul>
+  </div>
+</BaseLayout>

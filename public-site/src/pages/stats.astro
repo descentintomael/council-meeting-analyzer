@@ -1,0 +1,169 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import statisticsData from '../data/statistics.json';
+
+// Ensure base URL ends with /
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+
+const { overview, meetingsByMonth, meetingsByType, voteResults, votesByMonth, topTopics } = statisticsData;
+
+// Get sorted months for chart
+const months = Object.keys(meetingsByMonth).sort();
+const maxMeetingsPerMonth = Math.max(...Object.values(meetingsByMonth) as number[]);
+
+// Get vote result percentages
+const totalVotesWithResult = (voteResults.passed || 0) + (voteResults.failed || 0) + (voteResults.other || 0);
+const passedPercent = totalVotesWithResult > 0 ? Math.round((voteResults.passed || 0) / totalVotesWithResult * 100) : 0;
+const failedPercent = totalVotesWithResult > 0 ? Math.round((voteResults.failed || 0) / totalVotesWithResult * 100) : 0;
+
+// Calculate average WER as accuracy
+const avgAccuracy = overview.averageWer ? Math.round((1 - overview.averageWer) * 100) : null;
+---
+
+<BaseLayout title="Statistics">
+  <!-- Back navigation -->
+  <a href={base} class="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary mb-4 group">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    Back to Meetings
+  </a>
+
+  <header class="mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-base-content mb-2">
+      Statistics Dashboard
+    </h1>
+    <p class="text-base-content/70">
+      Overview of meeting activity, voting patterns, and topic trends.
+    </p>
+  </header>
+
+  <!-- Overview stats -->
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+    <div class="bg-base-200 rounded-box p-4 border border-base-300">
+      <div class="text-3xl font-bold text-primary">{overview.totalMeetings}</div>
+      <div class="text-sm text-base-content/60">Total Meetings</div>
+    </div>
+    <div class="bg-base-200 rounded-box p-4 border border-base-300">
+      <div class="text-3xl font-bold text-primary">{overview.totalVotes}</div>
+      <div class="text-sm text-base-content/60">Total Votes</div>
+    </div>
+    <div class="bg-base-200 rounded-box p-4 border border-base-300">
+      <div class="text-3xl font-bold text-primary">{overview.diarizedMeetings}</div>
+      <div class="text-sm text-base-content/60">Speaker Annotated</div>
+    </div>
+    <div class="bg-base-200 rounded-box p-4 border border-base-300">
+      <div class="text-3xl font-bold text-primary">{avgAccuracy ? `${avgAccuracy}%` : 'N/A'}</div>
+      <div class="text-sm text-base-content/60">Avg Transcript Accuracy</div>
+    </div>
+  </div>
+
+  <div class="grid gap-8 lg:grid-cols-2">
+    <!-- Meetings by month chart -->
+    <div class="bg-base-200 rounded-box p-6 border border-base-300">
+      <h2 class="text-xl font-semibold text-base-content mb-4">Meetings Over Time</h2>
+      <div class="space-y-1 max-h-[400px] overflow-y-auto">
+        {months.map(month => {
+          const count = meetingsByMonth[month];
+          const width = (count / maxMeetingsPerMonth) * 100;
+          return (
+            <div class="flex items-center gap-2 text-sm">
+              <span class="w-16 text-base-content/60 shrink-0">{month}</span>
+              <div class="flex-1 h-5 bg-base-300 rounded overflow-hidden">
+                <div
+                  class="h-full bg-primary"
+                  style={`width: ${width}%`}
+                />
+              </div>
+              <span class="w-6 text-right text-base-content/80">{count}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Meeting types breakdown -->
+    <div class="bg-base-200 rounded-box p-6 border border-base-300">
+      <h2 class="text-xl font-semibold text-base-content mb-4">Meeting Types</h2>
+      <div class="space-y-3">
+        {Object.entries(meetingsByType).map(([type, count]) => {
+          const percent = Math.round((count as number) / overview.totalMeetings * 100);
+          return (
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-base-content">{type}</span>
+                <span class="text-base-content/60">{count} ({percent}%)</span>
+              </div>
+              <div class="h-3 bg-base-300 rounded-full overflow-hidden">
+                <div class="h-full bg-info" style={`width: ${percent}%`} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Vote outcomes -->
+    <div class="bg-base-200 rounded-box p-6 border border-base-300">
+      <h2 class="text-xl font-semibold text-base-content mb-4">Vote Outcomes</h2>
+
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-success">{voteResults.passed || 0}</div>
+          <div class="text-sm text-base-content/60">Passed</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-error">{voteResults.failed || 0}</div>
+          <div class="text-sm text-base-content/60">Failed</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-base-content/60">{voteResults.other || 0}</div>
+          <div class="text-sm text-base-content/60">Other</div>
+        </div>
+      </div>
+
+      <!-- Vote result bar -->
+      <div class="h-8 rounded-full overflow-hidden flex">
+        <div class="bg-success flex items-center justify-center" style={`width: ${passedPercent}%`}>
+          {passedPercent > 10 && <span class="text-xs font-medium text-success-content">{passedPercent}%</span>}
+        </div>
+        <div class="bg-error flex items-center justify-center" style={`width: ${failedPercent}%`}>
+          {failedPercent > 10 && <span class="text-xs font-medium text-error-content">{failedPercent}%</span>}
+        </div>
+        <div class="bg-base-300 flex-1"></div>
+      </div>
+    </div>
+
+    <!-- Top topics -->
+    <div class="bg-base-200 rounded-box p-6 border border-base-300">
+      <h2 class="text-xl font-semibold text-base-content mb-4">Top Topics</h2>
+      <div class="flex flex-wrap gap-2">
+        {topTopics.slice(0, 15).map((topic: { topic: string; count: number }) => (
+          <a
+            href={`${base}topics/${encodeURIComponent(topic.topic)}`}
+            class="badge badge-lg badge-ghost hover:badge-primary transition-colors capitalize"
+          >
+            {topic.topic.replace(/_/g, ' ')}
+            <span class="ml-1 text-xs opacity-60">({topic.count})</span>
+          </a>
+        ))}
+      </div>
+      <a href={`${base}topics`} class="btn btn-ghost btn-sm mt-4">
+        View all topics
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick links -->
+  <div class="mt-8 grid gap-4 sm:grid-cols-3">
+    <a href={`${base}members`} class="btn btn-outline btn-block">
+      View Council Members
+    </a>
+    <a href={`${base}voting-alignment`} class="btn btn-outline btn-block">
+      Voting Alignment
+    </a>
+    <a href={`${base}data`} class="btn btn-outline btn-block">
+      Download Data
+    </a>
+  </div>
+</BaseLayout>

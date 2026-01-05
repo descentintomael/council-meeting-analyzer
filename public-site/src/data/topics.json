@@ -1,0 +1,2118 @@
+{
+  "topics": {
+    "parking minimums or parking reform": {
+      "topic": "parking minimums or parking reform",
+      "meetingCount": 65,
+      "meetings": [
+        {
+          "id": 1243,
+          "title": "11/18/25 Council Meeting",
+          "date": "2025-11-18",
+          "type": "City Council"
+        },
+        {
+          "id": 1240,
+          "title": "10/21/25 Council Meeting",
+          "date": "2025-10-21",
+          "type": "City Council"
+        },
+        {
+          "id": 1237,
+          "title": "10/7/25 Council Meeting",
+          "date": "2025-10-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1236,
+          "title": "9/16/25 City Council",
+          "date": "2025-09-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1235,
+          "title": "9/2/25 City Council and Special Closed Session",
+          "date": "2025-09-02",
+          "type": "Special Meeting"
+        },
+        {
+          "id": 1234,
+          "title": "8/25/25 Bidwell Park & Playground Commission",
+          "date": "2025-08-25",
+          "type": "City Council"
+        },
+        {
+          "id": 1233,
+          "title": "8/19/25 City Council",
+          "date": "2025-08-19",
+          "type": "City Council"
+        },
+        {
+          "id": 1230,
+          "title": "7/8/25 City Council",
+          "date": "2025-07-08",
+          "type": "City Council"
+        },
+        {
+          "id": 1229,
+          "title": "6/17/25 City Council",
+          "date": "2025-06-17",
+          "type": "City Council"
+        },
+        {
+          "id": 1225,
+          "title": "6/3/25 City Council Minutes",
+          "date": "2025-06-03",
+          "type": "City Council"
+        },
+        {
+          "id": 1224,
+          "title": "5/20/25 City Council Meeting",
+          "date": "2025-05-20",
+          "type": "City Council"
+        },
+        {
+          "id": 1223,
+          "title": "5/19/25 Bidwell Park and Playground Commission",
+          "date": "2025-05-19",
+          "type": "City Council"
+        },
+        {
+          "id": 1221,
+          "title": "5/6/25 City Council (Start at 3:00 p.m.)",
+          "date": "2025-05-06",
+          "type": "City Council"
+        },
+        {
+          "id": 1220,
+          "title": "4/28/25 Bidwell Park and Playground Commission",
+          "date": "2025-04-28",
+          "type": "City Council"
+        },
+        {
+          "id": 1217,
+          "title": "4/1/25 City Council",
+          "date": "2025-04-01",
+          "type": "City Council"
+        },
+        {
+          "id": 1216,
+          "title": "3/31/25 Bidwell Park and Playground Commission",
+          "date": "2025-03-31",
+          "type": "City Council"
+        },
+        {
+          "id": 1211,
+          "title": "3/4/25 City Council",
+          "date": "2025-03-04",
+          "type": "City Council"
+        },
+        {
+          "id": 1208,
+          "title": "2/18/25 City Council",
+          "date": "2025-02-18",
+          "type": "City Council"
+        },
+        {
+          "id": 1207,
+          "title": "2/4/25 City Council",
+          "date": "2025-02-04",
+          "type": "City Council"
+        },
+        {
+          "id": 1203,
+          "title": "1/7/25 City Council",
+          "date": "2025-01-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1198,
+          "title": "11/19/24 City Council",
+          "date": "2024-11-19",
+          "type": "City Council"
+        },
+        {
+          "id": 1196,
+          "title": "11/05/24 City Council",
+          "date": "2024-11-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1194,
+          "title": "10/15/24 City Council",
+          "date": "2024-10-15",
+          "type": "City Council"
+        },
+        {
+          "id": 1188,
+          "title": "9/17/24 City Council",
+          "date": "2024-09-17",
+          "type": "City Council"
+        },
+        {
+          "id": 1185,
+          "title": "9/3/24 City Council",
+          "date": "2024-09-03",
+          "type": "City Council"
+        },
+        {
+          "id": 1166,
+          "title": "6/4/24 City Council",
+          "date": "2024-06-04",
+          "type": "City Council"
+        },
+        {
+          "id": 1156,
+          "title": "3/19/24 City Council",
+          "date": "2024-03-19",
+          "type": "City Council"
+        },
+        {
+          "id": 1149,
+          "title": "1/16/24 Council Meeting",
+          "date": "2024-01-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1143,
+          "title": "11/21/23 Council Minutes",
+          "date": "2023-11-21",
+          "type": "City Council"
+        },
+        {
+          "id": 1140,
+          "title": "10/17/23 City Council",
+          "date": "2023-10-17",
+          "type": "City Council"
+        },
+        {
+          "id": 1131,
+          "title": "8/1/23 City Council",
+          "date": "2023-08-01",
+          "type": "City Council"
+        },
+        {
+          "id": 1121,
+          "title": "4/18/23 City Council",
+          "date": "2023-04-18",
+          "type": "City Council"
+        },
+        {
+          "id": 1119,
+          "title": "3/21/23 City Council",
+          "date": "2023-03-21",
+          "type": "City Council"
+        },
+        {
+          "id": 1113,
+          "title": "2/7/23 City Council",
+          "date": "2023-02-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1100,
+          "title": "12/20/22 City Council",
+          "date": "2022-12-20",
+          "type": "City Council"
+        },
+        {
+          "id": 1076,
+          "title": "8/2/22 City Council (Closed Session at 5:00 p.m.)",
+          "date": "2022-08-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1066,
+          "title": "5/17/22 City Council Meeting - 1 p.m. Budget Study Session",
+          "date": "2022-05-17",
+          "type": "City Council"
+        },
+        {
+          "id": 1061,
+          "title": "4/5/22 City Council Meeting",
+          "date": "2022-04-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1052,
+          "title": "3/1/22 City Council Meeting",
+          "date": "2022-03-01",
+          "type": "City Council"
+        },
+        {
+          "id": 1026,
+          "title": "12/2/21 Planning Commission",
+          "date": "2021-12-02",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1012,
+          "title": "11/2/21 City Council Meeting",
+          "date": "2021-11-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1010,
+          "title": "10/19/21 City Council Meeting",
+          "date": "2021-10-19",
+          "type": "City Council"
+        },
+        {
+          "id": 996,
+          "title": "8/3/21 City Council Meeting",
+          "date": "2021-08-03",
+          "type": "City Council"
+        },
+        {
+          "id": 982,
+          "title": "7/15/21 Planning Commission",
+          "date": "2021-07-15",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 946,
+          "title": "3/16/21 City Council Meeting",
+          "date": "2021-03-16",
+          "type": "City Council"
+        },
+        {
+          "id": 917,
+          "title": "9/1/20 City Council Meeting",
+          "date": "2020-09-01",
+          "type": "City Council"
+        },
+        {
+          "id": 916,
+          "title": "08/18/2020 City Council Meeting Continued to 08/25/20",
+          "date": "2020-08-18",
+          "type": "City Council"
+        },
+        {
+          "id": 914,
+          "title": "8/4/20 City Council Meeting",
+          "date": "2020-08-04",
+          "type": "City Council"
+        },
+        {
+          "id": 910,
+          "title": "7/7/20 City Council Meeting",
+          "date": "2020-07-07",
+          "type": "City Council"
+        },
+        {
+          "id": 902,
+          "title": "5/26/20 Special City Council Meeting",
+          "date": "2020-05-26",
+          "type": "Special Meeting"
+        },
+        {
+          "id": 900,
+          "title": "5/19/20 Special City Council Meeting",
+          "date": "2020-05-19",
+          "type": "Special Meeting"
+        },
+        {
+          "id": 915,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1062,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1089,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1151,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1158,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        },
+        {
+          "id": 1163,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1164,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        },
+        {
+          "id": 1167,
+          "title": "6-6-2024 Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1190,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        },
+        {
+          "id": 1210,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        },
+        {
+          "id": 1215,
+          "title": "3-20-2025 Planning Commission Meeting",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1218,
+          "title": "4-3-2025 Planning Commission Meeting",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1222,
+          "title": "5-15-2025 Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1226,
+          "title": "6-5-2025 Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        }
+      ]
+    },
+    "infill development": {
+      "topic": "infill development",
+      "meetingCount": 44,
+      "meetings": [
+        {
+          "id": 1237,
+          "title": "10/7/25 Council Meeting",
+          "date": "2025-10-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1236,
+          "title": "9/16/25 City Council",
+          "date": "2025-09-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1234,
+          "title": "8/25/25 Bidwell Park & Playground Commission",
+          "date": "2025-08-25",
+          "type": "City Council"
+        },
+        {
+          "id": 1225,
+          "title": "6/3/25 City Council Minutes",
+          "date": "2025-06-03",
+          "type": "City Council"
+        },
+        {
+          "id": 1224,
+          "title": "5/20/25 City Council Meeting",
+          "date": "2025-05-20",
+          "type": "City Council"
+        },
+        {
+          "id": 1221,
+          "title": "5/6/25 City Council (Start at 3:00 p.m.)",
+          "date": "2025-05-06",
+          "type": "City Council"
+        },
+        {
+          "id": 1219,
+          "title": "4/15/25 City Council",
+          "date": "2025-04-15",
+          "type": "City Council"
+        },
+        {
+          "id": 1217,
+          "title": "4/1/25 City Council",
+          "date": "2025-04-01",
+          "type": "City Council"
+        },
+        {
+          "id": 1209,
+          "title": "2/20/25 Planning Commission Meeting",
+          "date": "2025-02-20",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1204,
+          "title": "1/28/25 City Council",
+          "date": "2025-01-28",
+          "type": "City Council"
+        },
+        {
+          "id": 1194,
+          "title": "10/15/24 City Council",
+          "date": "2024-10-15",
+          "type": "City Council"
+        },
+        {
+          "id": 1188,
+          "title": "9/17/24 City Council",
+          "date": "2024-09-17",
+          "type": "City Council"
+        },
+        {
+          "id": 1185,
+          "title": "9/3/24 City Council",
+          "date": "2024-09-03",
+          "type": "City Council"
+        },
+        {
+          "id": 1180,
+          "title": "8/20/24 City Council",
+          "date": "2024-08-20",
+          "type": "City Council"
+        },
+        {
+          "id": 1174,
+          "title": "7/18/24 Planning Commission",
+          "date": "2024-07-18",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1165,
+          "title": "5/21/24 City Council",
+          "date": "2024-05-21",
+          "type": "City Council"
+        },
+        {
+          "id": 1149,
+          "title": "1/16/24 Council Meeting",
+          "date": "2024-01-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1141,
+          "title": "11/7/23 City Council",
+          "date": "2023-11-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1140,
+          "title": "10/17/23 City Council",
+          "date": "2023-10-17",
+          "type": "City Council"
+        },
+        {
+          "id": 1134,
+          "title": "9/5/23 City Council",
+          "date": "2023-09-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1131,
+          "title": "8/1/23 City Council",
+          "date": "2023-08-01",
+          "type": "City Council"
+        },
+        {
+          "id": 1129,
+          "title": "7/5/23 City Council",
+          "date": "2023-07-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1079,
+          "title": "9/6/22 Council Meeting",
+          "date": "2022-09-06",
+          "type": "City Council"
+        },
+        {
+          "id": 1076,
+          "title": "8/2/22 City Council (Closed Session at 5:00 p.m.)",
+          "date": "2022-08-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1065,
+          "title": "5/3/22 City Council Meeting",
+          "date": "2022-05-03",
+          "type": "City Council"
+        },
+        {
+          "id": 1061,
+          "title": "4/5/22 City Council Meeting",
+          "date": "2022-04-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1026,
+          "title": "12/2/21 Planning Commission",
+          "date": "2021-12-02",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1012,
+          "title": "11/2/21 City Council Meeting",
+          "date": "2021-11-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1004,
+          "title": "9/7/21 City Council Meeting",
+          "date": "2021-09-07",
+          "type": "City Council"
+        },
+        {
+          "id": 996,
+          "title": "8/3/21 City Council Meeting",
+          "date": "2021-08-03",
+          "type": "City Council"
+        },
+        {
+          "id": 982,
+          "title": "7/15/21 Planning Commission",
+          "date": "2021-07-15",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 930,
+          "title": "12/15/20 City Council Meeting",
+          "date": "2020-12-15",
+          "type": "City Council"
+        },
+        {
+          "id": 926,
+          "title": "11/17/20 City Council Meeting",
+          "date": "2020-11-17",
+          "type": "City Council"
+        },
+        {
+          "id": 901,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1062,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1063,
+          "title": "4-19-22 City Council Meeting",
+          "date": null,
+          "type": "City Council"
+        },
+        {
+          "id": 1089,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1117,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1151,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1163,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1210,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        },
+        {
+          "id": 1215,
+          "title": "3-20-2025 Planning Commission Meeting",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1218,
+          "title": "4-3-2025 Planning Commission Meeting",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1222,
+          "title": "5-15-2025 Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        }
+      ]
+    },
+    "infrastructure deficit": {
+      "topic": "infrastructure deficit",
+      "meetingCount": 28,
+      "meetings": [
+        {
+          "id": 1240,
+          "title": "10/21/25 Council Meeting",
+          "date": "2025-10-21",
+          "type": "City Council"
+        },
+        {
+          "id": 1237,
+          "title": "10/7/25 Council Meeting",
+          "date": "2025-10-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1236,
+          "title": "9/16/25 City Council",
+          "date": "2025-09-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1234,
+          "title": "8/25/25 Bidwell Park & Playground Commission",
+          "date": "2025-08-25",
+          "type": "City Council"
+        },
+        {
+          "id": 1224,
+          "title": "5/20/25 City Council Meeting",
+          "date": "2025-05-20",
+          "type": "City Council"
+        },
+        {
+          "id": 1221,
+          "title": "5/6/25 City Council (Start at 3:00 p.m.)",
+          "date": "2025-05-06",
+          "type": "City Council"
+        },
+        {
+          "id": 1217,
+          "title": "4/1/25 City Council",
+          "date": "2025-04-01",
+          "type": "City Council"
+        },
+        {
+          "id": 1198,
+          "title": "11/19/24 City Council",
+          "date": "2024-11-19",
+          "type": "City Council"
+        },
+        {
+          "id": 1194,
+          "title": "10/15/24 City Council",
+          "date": "2024-10-15",
+          "type": "City Council"
+        },
+        {
+          "id": 1185,
+          "title": "9/3/24 City Council",
+          "date": "2024-09-03",
+          "type": "City Council"
+        },
+        {
+          "id": 1162,
+          "title": "5/7/24 City Council",
+          "date": "2024-05-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1160,
+          "title": "4/16/24 City Council",
+          "date": "2024-04-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1155,
+          "title": "3/5/24 City Council",
+          "date": "2024-03-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1149,
+          "title": "1/16/24 Council Meeting",
+          "date": "2024-01-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1144,
+          "title": "12/5/23 City Council Meeting",
+          "date": "2023-12-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1124,
+          "title": "5/16/23 City Council",
+          "date": "2023-05-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1113,
+          "title": "2/7/23 City Council",
+          "date": "2023-02-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1088,
+          "title": "11/15/22 City Council",
+          "date": "2022-11-15",
+          "type": "City Council"
+        },
+        {
+          "id": 1079,
+          "title": "9/6/22 Council Meeting",
+          "date": "2022-09-06",
+          "type": "City Council"
+        },
+        {
+          "id": 1076,
+          "title": "8/2/22 City Council (Closed Session at 5:00 p.m.)",
+          "date": "2022-08-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1061,
+          "title": "4/5/22 City Council Meeting",
+          "date": "2022-04-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1026,
+          "title": "12/2/21 Planning Commission",
+          "date": "2021-12-02",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1004,
+          "title": "9/7/21 City Council Meeting",
+          "date": "2021-09-07",
+          "type": "City Council"
+        },
+        {
+          "id": 930,
+          "title": "12/15/20 City Council Meeting",
+          "date": "2020-12-15",
+          "type": "City Council"
+        },
+        {
+          "id": 904,
+          "title": "6/2/20 City Council Meeting - Continued to 6/9/20, Continued to 6/10/20",
+          "date": "2020-06-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1186,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1190,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        },
+        {
+          "id": 1210,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        }
+      ]
+    },
+    "missing middle housing": {
+      "topic": "missing middle housing",
+      "meetingCount": 26,
+      "meetings": [
+        {
+          "id": 1237,
+          "title": "10/7/25 Council Meeting",
+          "date": "2025-10-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1234,
+          "title": "8/25/25 Bidwell Park & Playground Commission",
+          "date": "2025-08-25",
+          "type": "City Council"
+        },
+        {
+          "id": 1221,
+          "title": "5/6/25 City Council (Start at 3:00 p.m.)",
+          "date": "2025-05-06",
+          "type": "City Council"
+        },
+        {
+          "id": 1217,
+          "title": "4/1/25 City Council",
+          "date": "2025-04-01",
+          "type": "City Council"
+        },
+        {
+          "id": 1212,
+          "title": "3/18/25 City Council",
+          "date": "2025-03-18",
+          "type": "City Council"
+        },
+        {
+          "id": 1209,
+          "title": "2/20/25 Planning Commission Meeting",
+          "date": "2025-02-20",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1188,
+          "title": "9/17/24 City Council",
+          "date": "2024-09-17",
+          "type": "City Council"
+        },
+        {
+          "id": 1185,
+          "title": "9/3/24 City Council",
+          "date": "2024-09-03",
+          "type": "City Council"
+        },
+        {
+          "id": 1180,
+          "title": "8/20/24 City Council",
+          "date": "2024-08-20",
+          "type": "City Council"
+        },
+        {
+          "id": 1166,
+          "title": "6/4/24 City Council",
+          "date": "2024-06-04",
+          "type": "City Council"
+        },
+        {
+          "id": 1149,
+          "title": "1/16/24 Council Meeting",
+          "date": "2024-01-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1141,
+          "title": "11/7/23 City Council",
+          "date": "2023-11-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1134,
+          "title": "9/5/23 City Council",
+          "date": "2023-09-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1120,
+          "title": "4/4/23 City Council",
+          "date": "2023-04-04",
+          "type": "City Council"
+        },
+        {
+          "id": 1079,
+          "title": "9/6/22 Council Meeting",
+          "date": "2022-09-06",
+          "type": "City Council"
+        },
+        {
+          "id": 1076,
+          "title": "8/2/22 City Council (Closed Session at 5:00 p.m.)",
+          "date": "2022-08-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1071,
+          "title": "6/21/22 City Council Minutes",
+          "date": "2022-06-21",
+          "type": "City Council"
+        },
+        {
+          "id": 1061,
+          "title": "4/5/22 City Council Meeting",
+          "date": "2022-04-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1026,
+          "title": "12/2/21 Planning Commission",
+          "date": "2021-12-02",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1004,
+          "title": "9/7/21 City Council Meeting",
+          "date": "2021-09-07",
+          "type": "City Council"
+        },
+        {
+          "id": 946,
+          "title": "3/16/21 City Council Meeting",
+          "date": "2021-03-16",
+          "type": "City Council"
+        },
+        {
+          "id": 937,
+          "title": "2/2/21 City Council Meeting",
+          "date": "2021-02-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1087,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1089,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1151,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1210,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        }
+      ]
+    },
+    "adu (accessory dwelling units)": {
+      "topic": "adu (accessory dwelling units)",
+      "meetingCount": 22,
+      "meetings": [
+        {
+          "id": 1237,
+          "title": "10/7/25 Council Meeting",
+          "date": "2025-10-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1234,
+          "title": "8/25/25 Bidwell Park & Playground Commission",
+          "date": "2025-08-25",
+          "type": "City Council"
+        },
+        {
+          "id": 1219,
+          "title": "4/15/25 City Council",
+          "date": "2025-04-15",
+          "type": "City Council"
+        },
+        {
+          "id": 1188,
+          "title": "9/17/24 City Council",
+          "date": "2024-09-17",
+          "type": "City Council"
+        },
+        {
+          "id": 1185,
+          "title": "9/3/24 City Council",
+          "date": "2024-09-03",
+          "type": "City Council"
+        },
+        {
+          "id": 1149,
+          "title": "1/16/24 Council Meeting",
+          "date": "2024-01-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1124,
+          "title": "5/16/23 City Council",
+          "date": "2023-05-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1113,
+          "title": "2/7/23 City Council",
+          "date": "2023-02-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1100,
+          "title": "12/20/22 City Council",
+          "date": "2022-12-20",
+          "type": "City Council"
+        },
+        {
+          "id": 1076,
+          "title": "8/2/22 City Council (Closed Session at 5:00 p.m.)",
+          "date": "2022-08-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1066,
+          "title": "5/17/22 City Council Meeting - 1 p.m. Budget Study Session",
+          "date": "2022-05-17",
+          "type": "City Council"
+        },
+        {
+          "id": 1061,
+          "title": "4/5/22 City Council Meeting",
+          "date": "2022-04-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1026,
+          "title": "12/2/21 Planning Commission",
+          "date": "2021-12-02",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 926,
+          "title": "11/17/20 City Council Meeting",
+          "date": "2020-11-17",
+          "type": "City Council"
+        },
+        {
+          "id": 923,
+          "title": "10/20/20 City Council Meeting",
+          "date": "2020-10-20",
+          "type": "City Council"
+        },
+        {
+          "id": 919,
+          "title": "9/15/20 City Council Meeting",
+          "date": "2020-09-15",
+          "type": "City Council"
+        },
+        {
+          "id": 917,
+          "title": "9/1/20 City Council Meeting",
+          "date": "2020-09-01",
+          "type": "City Council"
+        },
+        {
+          "id": 910,
+          "title": "7/7/20 City Council Meeting",
+          "date": "2020-07-07",
+          "type": "City Council"
+        },
+        {
+          "id": 904,
+          "title": "6/2/20 City Council Meeting - Continued to 6/9/20, Continued to 6/10/20",
+          "date": "2020-06-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1070,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1210,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        },
+        {
+          "id": 1215,
+          "title": "3-20-2025 Planning Commission Meeting",
+          "date": null,
+          "type": "Planning Commission"
+        }
+      ]
+    },
+    "groundwater or water supply": {
+      "topic": "groundwater or water supply",
+      "meetingCount": 21,
+      "meetings": [
+        {
+          "id": 1241,
+          "title": "10/27/25 Bidwell Park & Playground Commission",
+          "date": "2025-10-27",
+          "type": "City Council"
+        },
+        {
+          "id": 1234,
+          "title": "8/25/25 Bidwell Park & Playground Commission",
+          "date": "2025-08-25",
+          "type": "City Council"
+        },
+        {
+          "id": 1224,
+          "title": "5/20/25 City Council Meeting",
+          "date": "2025-05-20",
+          "type": "City Council"
+        },
+        {
+          "id": 1198,
+          "title": "11/19/24 City Council",
+          "date": "2024-11-19",
+          "type": "City Council"
+        },
+        {
+          "id": 1194,
+          "title": "10/15/24 City Council",
+          "date": "2024-10-15",
+          "type": "City Council"
+        },
+        {
+          "id": 1185,
+          "title": "9/3/24 City Council",
+          "date": "2024-09-03",
+          "type": "City Council"
+        },
+        {
+          "id": 1154,
+          "title": "02/20/24 City Council",
+          "date": "2024-02-20",
+          "type": "City Council"
+        },
+        {
+          "id": 1149,
+          "title": "1/16/24 Council Meeting",
+          "date": "2024-01-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1122,
+          "title": "5/2/23 City Council",
+          "date": "2023-05-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1079,
+          "title": "9/6/22 Council Meeting",
+          "date": "2022-09-06",
+          "type": "City Council"
+        },
+        {
+          "id": 1076,
+          "title": "8/2/22 City Council (Closed Session at 5:00 p.m.)",
+          "date": "2022-08-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1061,
+          "title": "4/5/22 City Council Meeting",
+          "date": "2022-04-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1059,
+          "title": "3/15/22 City Council Meeting",
+          "date": "2022-03-15",
+          "type": "City Council"
+        },
+        {
+          "id": 1055,
+          "title": "2/1/22 City Council Meeting",
+          "date": "2022-02-01",
+          "type": "City Council"
+        },
+        {
+          "id": 1026,
+          "title": "12/2/21 Planning Commission",
+          "date": "2021-12-02",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1010,
+          "title": "10/19/21 City Council Meeting",
+          "date": "2021-10-19",
+          "type": "City Council"
+        },
+        {
+          "id": 973,
+          "title": "5/18/21 City Council Meeting",
+          "date": "2021-05-18",
+          "type": "City Council"
+        },
+        {
+          "id": 972,
+          "title": "5/4/21 City Council Meeting",
+          "date": "2021-05-04",
+          "type": "City Council"
+        },
+        {
+          "id": 952,
+          "title": "4/6/21 City Council Meeting",
+          "date": "2021-04-06",
+          "type": "City Council"
+        },
+        {
+          "id": 946,
+          "title": "3/16/21 City Council Meeting",
+          "date": "2021-03-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1210,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        }
+      ]
+    },
+    "valley's edge development": {
+      "topic": "valley's edge development",
+      "meetingCount": 21,
+      "meetings": [
+        {
+          "id": 1234,
+          "title": "8/25/25 Bidwell Park & Playground Commission",
+          "date": "2025-08-25",
+          "type": "City Council"
+        },
+        {
+          "id": 1185,
+          "title": "9/3/24 City Council",
+          "date": "2024-09-03",
+          "type": "City Council"
+        },
+        {
+          "id": 1165,
+          "title": "5/21/24 City Council",
+          "date": "2024-05-21",
+          "type": "City Council"
+        },
+        {
+          "id": 1149,
+          "title": "1/16/24 Council Meeting",
+          "date": "2024-01-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1140,
+          "title": "10/17/23 City Council",
+          "date": "2023-10-17",
+          "type": "City Council"
+        },
+        {
+          "id": 1134,
+          "title": "9/5/23 City Council",
+          "date": "2023-09-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1121,
+          "title": "4/18/23 City Council",
+          "date": "2023-04-18",
+          "type": "City Council"
+        },
+        {
+          "id": 1120,
+          "title": "4/4/23 City Council",
+          "date": "2023-04-04",
+          "type": "City Council"
+        },
+        {
+          "id": 1113,
+          "title": "2/7/23 City Council",
+          "date": "2023-02-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1102,
+          "title": "1/17/23 City Council",
+          "date": "2023-01-17",
+          "type": "City Council"
+        },
+        {
+          "id": 1101,
+          "title": "1/3/23 City Council",
+          "date": "2023-01-03",
+          "type": "City Council"
+        },
+        {
+          "id": 1100,
+          "title": "12/20/22 City Council",
+          "date": "2022-12-20",
+          "type": "City Council"
+        },
+        {
+          "id": 1076,
+          "title": "8/2/22 City Council (Closed Session at 5:00 p.m.)",
+          "date": "2022-08-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1066,
+          "title": "5/17/22 City Council Meeting - 1 p.m. Budget Study Session",
+          "date": "2022-05-17",
+          "type": "City Council"
+        },
+        {
+          "id": 1061,
+          "title": "4/5/22 City Council Meeting",
+          "date": "2022-04-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1026,
+          "title": "12/2/21 Planning Commission",
+          "date": "2021-12-02",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 923,
+          "title": "10/20/20 City Council Meeting",
+          "date": "2020-10-20",
+          "type": "City Council"
+        },
+        {
+          "id": 904,
+          "title": "6/2/20 City Council Meeting - Continued to 6/9/20, Continued to 6/10/20",
+          "date": "2020-06-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1063,
+          "title": "4-19-22 City Council Meeting",
+          "date": null,
+          "type": "City Council"
+        },
+        {
+          "id": 1089,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1210,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        }
+      ]
+    },
+    "form-based codes": {
+      "topic": "form-based codes",
+      "meetingCount": 9,
+      "meetings": [
+        {
+          "id": 1234,
+          "title": "8/25/25 Bidwell Park & Playground Commission",
+          "date": "2025-08-25",
+          "type": "City Council"
+        },
+        {
+          "id": 1221,
+          "title": "5/6/25 City Council (Start at 3:00 p.m.)",
+          "date": "2025-05-06",
+          "type": "City Council"
+        },
+        {
+          "id": 1185,
+          "title": "9/3/24 City Council",
+          "date": "2024-09-03",
+          "type": "City Council"
+        },
+        {
+          "id": 1149,
+          "title": "1/16/24 Council Meeting",
+          "date": "2024-01-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1079,
+          "title": "9/6/22 Council Meeting",
+          "date": "2022-09-06",
+          "type": "City Council"
+        },
+        {
+          "id": 1076,
+          "title": "8/2/22 City Council (Closed Session at 5:00 p.m.)",
+          "date": "2022-08-02",
+          "type": "City Council"
+        },
+        {
+          "id": 1061,
+          "title": "4/5/22 City Council Meeting",
+          "date": "2022-04-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1026,
+          "title": "12/2/21 Planning Commission",
+          "date": "2021-12-02",
+          "type": "Planning Commission"
+        },
+        {
+          "id": 1210,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        }
+      ]
+    },
+    "affordable housing": {
+      "topic": "affordable housing",
+      "meetingCount": 7,
+      "meetings": [
+        {
+          "id": 1236,
+          "title": "9/16/25 City Council",
+          "date": "2025-09-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1141,
+          "title": "11/7/23 City Council",
+          "date": "2023-11-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1121,
+          "title": "4/18/23 City Council",
+          "date": "2023-04-18",
+          "type": "City Council"
+        },
+        {
+          "id": 1004,
+          "title": "9/7/21 City Council Meeting",
+          "date": "2021-09-07",
+          "type": "City Council"
+        },
+        {
+          "id": 946,
+          "title": "3/16/21 City Council Meeting",
+          "date": "2021-03-16",
+          "type": "City Council"
+        },
+        {
+          "id": 919,
+          "title": "9/15/20 City Council Meeting",
+          "date": "2020-09-15",
+          "type": "City Council"
+        },
+        {
+          "id": 1063,
+          "title": "4-19-22 City Council Meeting",
+          "date": null,
+          "type": "City Council"
+        }
+      ]
+    },
+    "infrastructure": {
+      "topic": "infrastructure",
+      "meetingCount": 5,
+      "meetings": [
+        {
+          "id": 1236,
+          "title": "9/16/25 City Council",
+          "date": "2025-09-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1219,
+          "title": "4/15/25 City Council",
+          "date": "2025-04-15",
+          "type": "City Council"
+        },
+        {
+          "id": 1124,
+          "title": "5/16/23 City Council",
+          "date": "2023-05-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1074,
+          "title": "7/5/22 City Council",
+          "date": "2022-07-05",
+          "type": "City Council"
+        },
+        {
+          "id": 1182,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        }
+      ]
+    },
+    "groundwater": {
+      "topic": "groundwater",
+      "meetingCount": 5,
+      "meetings": [
+        {
+          "id": 1235,
+          "title": "9/2/25 City Council and Special Closed Session",
+          "date": "2025-09-02",
+          "type": "Special Meeting"
+        },
+        {
+          "id": 1203,
+          "title": "1/7/25 City Council",
+          "date": "2025-01-07",
+          "type": "City Council"
+        },
+        {
+          "id": 1116,
+          "title": "2/21/23 City Council",
+          "date": "2023-02-21",
+          "type": "City Council"
+        },
+        {
+          "id": 946,
+          "title": "3/16/21 City Council Meeting",
+          "date": "2021-03-16",
+          "type": "City Council"
+        },
+        {
+          "id": 937,
+          "title": "2/2/21 City Council Meeting",
+          "date": "2021-02-02",
+          "type": "City Council"
+        }
+      ]
+    },
+    "housing crisis": {
+      "topic": "housing crisis",
+      "meetingCount": 3,
+      "meetings": [
+        {
+          "id": 1212,
+          "title": "3/18/25 City Council",
+          "date": "2025-03-18",
+          "type": "City Council"
+        },
+        {
+          "id": 1004,
+          "title": "9/7/21 City Council Meeting",
+          "date": "2021-09-07",
+          "type": "City Council"
+        },
+        {
+          "id": 924,
+          "title": "11/3/20 City Council Meeting",
+          "date": "2020-11-03",
+          "type": "City Council"
+        }
+      ]
+    },
+    "housing": {
+      "topic": "housing",
+      "meetingCount": 3,
+      "meetings": [
+        {
+          "id": 1165,
+          "title": "5/21/24 City Council",
+          "date": "2024-05-21",
+          "type": "City Council"
+        },
+        {
+          "id": 1124,
+          "title": "5/16/23 City Council",
+          "date": "2023-05-16",
+          "type": "City Council"
+        },
+        {
+          "id": 1027,
+          "title": "12/7/21 City Council Meeting",
+          "date": "2021-12-07",
+          "type": "City Council"
+        }
+      ]
+    },
+    "smart growth": {
+      "topic": "smart growth",
+      "meetingCount": 2,
+      "meetings": [
+        {
+          "id": 1221,
+          "title": "5/6/25 City Council (Start at 3:00 p.m.)",
+          "date": "2025-05-06",
+          "type": "City Council"
+        },
+        {
+          "id": 1165,
+          "title": "5/21/24 City Council",
+          "date": "2024-05-21",
+          "type": "City Council"
+        }
+      ]
+    },
+    "parking": {
+      "topic": "parking",
+      "meetingCount": 2,
+      "meetings": [
+        {
+          "id": 1219,
+          "title": "4/15/25 City Council",
+          "date": "2025-04-15",
+          "type": "City Council"
+        },
+        {
+          "id": 1079,
+          "title": "9/6/22 Council Meeting",
+          "date": "2022-09-06",
+          "type": "City Council"
+        }
+      ]
+    },
+    "tiny homes": {
+      "topic": "tiny homes",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1235,
+          "title": "9/2/25 City Council and Special Closed Session",
+          "date": "2025-09-02",
+          "type": "Special Meeting"
+        }
+      ]
+    },
+    "parking difficulties and new parking systems": {
+      "topic": "parking difficulties and new parking systems",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1225,
+          "title": "6/3/25 City Council Minutes",
+          "date": "2025-06-03",
+          "type": "City Council"
+        }
+      ]
+    },
+    "parking management program": {
+      "topic": "parking management program",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1224,
+          "title": "5/20/25 City Council Meeting",
+          "date": "2025-05-20",
+          "type": "City Council"
+        }
+      ]
+    },
+    "mixed-use housing": {
+      "topic": "mixed-use housing",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1221,
+          "title": "5/6/25 City Council (Start at 3:00 p.m.)",
+          "date": "2025-05-06",
+          "type": "City Council"
+        }
+      ]
+    },
+    "ground floor office space": {
+      "topic": "ground floor office space",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1217,
+          "title": "4/1/25 City Council",
+          "date": "2025-04-01",
+          "type": "City Council"
+        }
+      ]
+    },
+    "vacant buildings": {
+      "topic": "vacant buildings",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1217,
+          "title": "4/1/25 City Council",
+          "date": "2025-04-01",
+          "type": "City Council"
+        }
+      ]
+    },
+    "managed campgrounds": {
+      "topic": "managed campgrounds",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1211,
+          "title": "3/4/25 City Council",
+          "date": "2025-03-04",
+          "type": "City Council"
+        }
+      ]
+    },
+    "micro shelters": {
+      "topic": "micro shelters",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1211,
+          "title": "3/4/25 City Council",
+          "date": "2025-03-04",
+          "type": "City Council"
+        }
+      ]
+    },
+    "safe parking sites": {
+      "topic": "safe parking sites",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1211,
+          "title": "3/4/25 City Council",
+          "date": "2025-03-04",
+          "type": "City Council"
+        }
+      ]
+    },
+    "housing fee": {
+      "topic": "housing fee",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1141,
+          "title": "11/7/23 City Council",
+          "date": "2023-11-07",
+          "type": "City Council"
+        }
+      ]
+    },
+    "housing money": {
+      "topic": "housing money",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1141,
+          "title": "11/7/23 City Council",
+          "date": "2023-11-07",
+          "type": "City Council"
+        }
+      ]
+    },
+    "adus": {
+      "topic": "adus",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1124,
+          "title": "5/16/23 City Council",
+          "date": "2023-05-16",
+          "type": "City Council"
+        }
+      ]
+    },
+    "economic development": {
+      "topic": "economic development",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1124,
+          "title": "5/16/23 City Council",
+          "date": "2023-05-16",
+          "type": "City Council"
+        }
+      ]
+    },
+    "legalizing apartments more broadly": {
+      "topic": "legalizing apartments more broadly",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1101,
+          "title": "1/3/23 City Council",
+          "date": "2023-01-03",
+          "type": "City Council"
+        }
+      ]
+    },
+    "reducing dependence on cars and new developments": {
+      "topic": "reducing dependence on cars and new developments",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1101,
+          "title": "1/3/23 City Council",
+          "date": "2023-01-03",
+          "type": "City Council"
+        }
+      ]
+    },
+    "using community development to improve the community": {
+      "topic": "using community development to improve the community",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1101,
+          "title": "1/3/23 City Council",
+          "date": "2023-01-03",
+          "type": "City Council"
+        }
+      ]
+    },
+    "affordable housing project": {
+      "topic": "affordable housing project",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1083,
+          "title": "10/18/22 City Council",
+          "date": "2022-10-18",
+          "type": "City Council"
+        }
+      ]
+    },
+    "valley's edge": {
+      "topic": "valley's edge",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1059,
+          "title": "3/15/22 City Council Meeting",
+          "date": "2022-03-15",
+          "type": "City Council"
+        }
+      ]
+    },
+    "community land trusts": {
+      "topic": "community land trusts",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 946,
+          "title": "3/16/21 City Council Meeting",
+          "date": "2021-03-16",
+          "type": "City Council"
+        }
+      ]
+    },
+    "inclusionary zoning": {
+      "topic": "inclusionary zoning",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 946,
+          "title": "3/16/21 City Council Meeting",
+          "date": "2021-03-16",
+          "type": "City Council"
+        }
+      ]
+    },
+    "public-private partnerships": {
+      "topic": "public-private partnerships",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 946,
+          "title": "3/16/21 City Council Meeting",
+          "date": "2021-03-16",
+          "type": "City Council"
+        }
+      ]
+    },
+    "building codes": {
+      "topic": "building codes",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 943,
+          "title": "2/16/21 City Council Meeting - Continued to March 2, 2020",
+          "date": "2021-02-16",
+          "type": "City Council"
+        }
+      ]
+    },
+    "low-barrier shelter": {
+      "topic": "low-barrier shelter",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 943,
+          "title": "2/16/21 City Council Meeting - Continued to March 2, 2020",
+          "date": "2021-02-16",
+          "type": "City Council"
+        }
+      ]
+    },
+    "low-income housing": {
+      "topic": "low-income housing",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 943,
+          "title": "2/16/21 City Council Meeting - Continued to March 2, 2020",
+          "date": "2021-02-16",
+          "type": "City Council"
+        }
+      ]
+    },
+    "safe parking proposal": {
+      "topic": "safe parking proposal",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 937,
+          "title": "2/2/21 City Council Meeting",
+          "date": "2021-02-02",
+          "type": "City Council"
+        }
+      ]
+    },
+    "affordable units": {
+      "topic": "affordable units",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1006,
+          "title": "9-21-21 City Council Meeting",
+          "date": null,
+          "type": "City Council"
+        }
+      ]
+    },
+    "infrastructure improvements": {
+      "topic": "infrastructure improvements",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1006,
+          "title": "9-21-21 City Council Meeting",
+          "date": null,
+          "type": "City Council"
+        }
+      ]
+    },
+    "sewer connection program": {
+      "topic": "sewer connection program",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1006,
+          "title": "9-21-21 City Council Meeting",
+          "date": null,
+          "type": "City Council"
+        }
+      ]
+    },
+    "missing neighborhood retail element": {
+      "topic": "missing neighborhood retail element",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1117,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        }
+      ]
+    },
+    "code amendments": {
+      "topic": "code amendments",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1163,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        }
+      ]
+    },
+    "mixed use": {
+      "topic": "mixed use",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1163,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        }
+      ]
+    },
+    "residential density": {
+      "topic": "residential density",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1163,
+          "title": "Planning Commission",
+          "date": null,
+          "type": "Planning Commission"
+        }
+      ]
+    },
+    "water supply": {
+      "topic": "water supply",
+      "meetingCount": 1,
+      "meetings": [
+        {
+          "id": 1190,
+          "title": "Bidwell Park & Playground Commission",
+          "date": null,
+          "type": "City Council"
+        }
+      ]
+    }
+  },
+  "topicList": [
+    "parking minimums or parking reform",
+    "infill development",
+    "infrastructure deficit",
+    "missing middle housing",
+    "adu (accessory dwelling units)",
+    "groundwater or water supply",
+    "valley's edge development",
+    "form-based codes",
+    "affordable housing",
+    "infrastructure",
+    "groundwater",
+    "housing crisis",
+    "housing",
+    "smart growth",
+    "parking",
+    "tiny homes",
+    "parking difficulties and new parking systems",
+    "parking management program",
+    "mixed-use housing",
+    "ground floor office space",
+    "vacant buildings",
+    "managed campgrounds",
+    "micro shelters",
+    "safe parking sites",
+    "housing fee",
+    "housing money",
+    "adus",
+    "economic development",
+    "legalizing apartments more broadly",
+    "reducing dependence on cars and new developments",
+    "using community development to improve the community",
+    "affordable housing project",
+    "valley's edge",
+    "community land trusts",
+    "inclusionary zoning",
+    "public-private partnerships",
+    "building codes",
+    "low-barrier shelter",
+    "low-income housing",
+    "safe parking proposal",
+    "affordable units",
+    "infrastructure improvements",
+    "sewer connection program",
+    "missing neighborhood retail element",
+    "code amendments",
+    "mixed use",
+    "residential density",
+    "water supply"
+  ]
+}

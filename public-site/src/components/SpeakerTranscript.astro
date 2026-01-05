@@ -2,6 +2,7 @@
 /**
  * SpeakerTranscript - Displays speaker-annotated transcript segments
  * Groups consecutive segments by the same speaker and shows confidence indicators
+ * Includes timestamps with optional video links
  */
 
 interface Segment {
@@ -13,15 +14,17 @@ interface Segment {
 
 interface Props {
   segments: Segment[];
+  videoUrl?: string;
 }
 
-const { segments } = Astro.props;
+const { segments, videoUrl } = Astro.props;
 
 // Group consecutive segments by speaker to reduce visual noise
 interface SpeakerGroup {
   speaker: string;
   confidence: number;
   texts: string[];
+  startTime?: number;  // Start time of first segment in group
 }
 
 function groupBySpeaker(segments: Segment[]): SpeakerGroup[] {
@@ -38,7 +41,8 @@ function groupBySpeaker(segments: Segment[]): SpeakerGroup[] {
       groups.push({
         speaker: seg.speaker,
         confidence: seg.confidence,
-        texts: [seg.text]
+        texts: [seg.text],
+        startTime: seg.start
       });
     }
   }
@@ -58,6 +62,26 @@ function confidenceIcon(conf: number): string {
   if (conf >= 0.8) return "●";  // High confidence
   if (conf >= 0.5) return "◐";  // Medium confidence
   return "○";  // Low confidence
+}
+
+// Format seconds to HH:MM:SS or MM:SS
+function formatTimestamp(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+
+  if (h > 0) {
+    return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+// Create video URL with timestamp
+function getVideoUrlWithTime(videoUrl: string, seconds: number): string {
+  // Granicus URLs support start time parameter
+  const url = new URL(videoUrl);
+  url.searchParams.set('starttime', Math.floor(seconds).toString());
+  return url.toString();
 }
 ---
 
@@ -87,6 +111,23 @@ function confidenceIcon(conf: number): string {
         >
           {confidenceIcon(group.confidence)}
         </span>
+        {group.startTime !== undefined && group.startTime > 0 && (
+          videoUrl ? (
+            <a
+              href={getVideoUrlWithTime(videoUrl, group.startTime)}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-xs text-base-content/50 hover:text-primary font-mono ml-auto"
+              title="Jump to this point in the video"
+            >
+              {formatTimestamp(group.startTime)}
+            </a>
+          ) : (
+            <span class="text-xs text-base-content/40 font-mono ml-auto">
+              {formatTimestamp(group.startTime)}
+            </span>
+          )
+        )}
       </div>
       <p class="text-base-content/80 text-sm leading-relaxed">{group.texts.join(' ')}</p>
     </div>

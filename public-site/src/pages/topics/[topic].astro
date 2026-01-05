@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MeetingCard from '../../components/MeetingCard.astro';
+import topicsData from '../../data/topics.json';
+import meetingsData from '../../data/meetings.json';
+
+export function getStaticPaths() {
+  return topicsData.topicList.map((topic: string) => ({
+    params: { topic },
+    props: { topicData: topicsData.topics[topic] }
+  }));
+}
+
+interface TopicData {
+  topic: string;
+  meetingCount: number;
+  meetings: { id: number; title: string; date: string; type: string }[];
+}
+
+const { topicData } = Astro.props as { topicData: TopicData };
+const { topic } = Astro.params;
+
+// Ensure base URL ends with /
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+
+// Get full meeting data for each meeting ID
+const meetingMap = new Map(meetingsData.meetings.map((m: any) => [m.id, m]));
+const fullMeetings = topicData.meetings
+  .map(m => meetingMap.get(m.id))
+  .filter((m): m is typeof meetingsData.meetings[0] => m !== undefined);
+
+// Get related topics (topics that appear in the same meetings)
+const relatedTopics: Record<string, number> = {};
+for (const meeting of fullMeetings) {
+  for (const t of meeting.topics) {
+    if (t !== topic) {
+      relatedTopics[t] = (relatedTopics[t] || 0) + 1;
+    }
+  }
+}
+const topRelatedTopics = Object.entries(relatedTopics)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 8);
+
+// Format topic for display
+const displayTopic = topic?.replace(/_/g, ' ') || '';
+---
+
+<BaseLayout title={`${displayTopic} - Topics`}>
+  <!-- Back navigation -->
+  <a href={`${base}topics`} class="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary mb-4 group">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    Back to Topics
+  </a>
+
+  <!-- Topic header -->
+  <header class="mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-base-content mb-2 capitalize">
+      {displayTopic}
+    </h1>
+    <p class="text-base-content/70">
+      {topicData.meetingCount} meeting{topicData.meetingCount !== 1 ? 's' : ''} discussed this topic
+    </p>
+  </header>
+
+  <div class="grid gap-8 lg:grid-cols-3">
+    <!-- Meetings list -->
+    <div class="lg:col-span-2">
+      <h2 class="text-xl font-semibold text-base-content mb-4">
+        Related Meetings
+      </h2>
+      <div class="grid gap-4">
+        {fullMeetings.map(meeting => (
+          <MeetingCard
+            id={meeting.id}
+            title={meeting.title}
+            date={meeting.date}
+            type={meeting.type || 'Unknown'}
+            summary={meeting.summary}
+            voteCount={meeting.votes?.length || 0}
+            topics={meeting.topics.filter((t: string) => t !== topic)}
+            werScore={meeting.werScore}
+            hasDiarization={Boolean(meeting.diarizedTranscript)}
+          />
+        ))}
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="space-y-6">
+      <!-- Topic stats -->
+      <div class="bg-base-200 rounded-box p-4 border border-base-300">
+        <h3 class="font-semibold text-base-content mb-3">Topic Stats</h3>
+        <dl class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <dt class="text-base-content/60">Total Meetings</dt>
+            <dd class="font-medium">{topicData.meetingCount}</dd>
+          </div>
+          {fullMeetings.length > 0 && (
+            <>
+              <div class="flex justify-between">
+                <dt class="text-base-content/60">First Mention</dt>
+                <dd>{fullMeetings[fullMeetings.length - 1]?.date || 'Unknown'}</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-base-content/60">Latest Mention</dt>
+                <dd>{fullMeetings[0]?.date || 'Unknown'}</dd>
+              </div>
+            </>
+          )}
+        </dl>
+      </div>
+
+      <!-- Related topics -->
+      {topRelatedTopics.length > 0 && (
+        <div class="bg-base-200 rounded-box p-4 border border-base-300">
+          <h3 class="font-semibold text-base-content mb-3">Related Topics</h3>
+          <div class="flex flex-wrap gap-2">
+            {topRelatedTopics.map(([relatedTopic, count]) => (
+              <a
+                href={`${base}topics/${encodeURIComponent(relatedTopic)}`}
+                class="badge badge-ghost badge-lg hover:badge-primary transition-colors capitalize"
+                title={`${count} shared meetings`}
+              >
+                {relatedTopic.replace(/_/g, ' ')}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Browse more -->
+      <a href={`${base}topics`} class="btn btn-outline btn-primary btn-block">
+        Browse All Topics
+      </a>
+    </aside>
+  </div>
+</BaseLayout>
