@@ -1,0 +1,173 @@
+{
+  "generated": "2026-01-05T17:10:07.137Z",
+  "summary": {
+    "personasAnalyzed": 6,
+    "totalTasks": 35,
+    "tasksSucceeded": 35,
+    "overallScore": 10,
+    "actionItemsCount": 4,
+    "highPriorityCount": 0
+  },
+  "personaResults": [
+    {
+      "persona": "Alex - Accessibility Auditor",
+      "score": 10,
+      "topFrustration": "None identified",
+      "itemCount": 1
+    },
+    {
+      "persona": "David - Concerned Citizen",
+      "score": 10,
+      "topFrustration": "None identified",
+      "itemCount": 0
+    },
+    {
+      "persona": "Elena - UI Designer",
+      "score": 10,
+      "topFrustration": "None identified",
+      "itemCount": 0
+    },
+    {
+      "persona": "James - First-Time Visitor",
+      "score": 10,
+      "topFrustration": "None identified",
+      "itemCount": 1
+    },
+    {
+      "persona": "Maria - Campaign Researcher",
+      "score": 10,
+      "topFrustration": "None identified",
+      "itemCount": 1
+    },
+    {
+      "persona": "Sarah - Local Journalist",
+      "score": 10,
+      "topFrustration": "None identified",
+      "itemCount": 1
+    }
+  ],
+  "actionItems": [
+    {
+      "category": "content",
+      "priority": "low",
+      "issue": "A: No visible focus indicator",
+      "location": "Interactive element",
+      "recommendation": "Consider adding missing feature or content",
+      "reportedBy": [
+        "Alex - Accessibility Auditor"
+      ]
+    },
+    {
+      "category": "content",
+      "priority": "low",
+      "issue": "No explicit help/guide for new users",
+      "location": "Homepage",
+      "recommendation": "Consider adding missing feature or content",
+      "reportedBy": [
+        "James - First-Time Visitor"
+      ]
+    },
+    {
+      "category": "content",
+      "priority": "low",
+      "issue": "Date information visible but no date range filtering",
+      "location": "Meeting cards",
+      "recommendation": "Consider adding missing feature or content",
+      "reportedBy": [
+        "Maria - Campaign Researcher"
+      ]
+    },
+    {
+      "category": "content",
+      "priority": "low",
+      "issue": "Transcript lacks timestamps for video correlation",
+      "location": "Transcript",
+      "recommendation": "Consider adding missing feature or content",
+      "reportedBy": [
+        "Sarah - Local Journalist"
+      ]
+    }
+  ],
+  "rawAnalyses": [
+    {
+      "persona": "Alex - Accessibility Auditor",
+      "analysis": {
+        "action_items": [
+          {
+            "category": "content",
+            "priority": "low",
+            "issue": "A: No visible focus indicator",
+            "location": "Interactive element",
+            "recommendation": "Consider adding missing feature or content"
+          }
+        ],
+        "overall_score": 10,
+        "top_frustration": "None identified"
+      }
+    },
+    {
+      "persona": "David - Concerned Citizen",
+      "analysis": {
+        "action_items": [],
+        "overall_score": 10,
+        "top_frustration": "None identified"
+      }
+    },
+    {
+      "persona": "Elena - UI Designer",
+      "analysis": {
+        "action_items": [],
+        "overall_score": 10,
+        "top_frustration": "None identified"
+      }
+    },
+    {
+      "persona": "James - First-Time Visitor",
+      "analysis": {
+        "action_items": [
+          {
+            "category": "content",
+            "priority": "low",
+            "issue": "No explicit help/guide for new users",
+            "location": "Homepage",
+            "recommendation": "Consider adding missing feature or content"
+          }
+        ],
+        "overall_score": 10,
+        "top_frustration": "None identified"
+      }
+    },
+    {
+      "persona": "Maria - Campaign Researcher",
+      "analysis": {
+        "action_items": [
+          {
+            "category": "content",
+            "priority": "low",
+            "issue": "Date information visible but no date range filtering",
+            "location": "Meeting cards",
+            "recommendation": "Consider adding missing feature or content"
+          }
+        ],
+        "overall_score": 10,
+        "top_frustration": "None identified"
+      }
+    },
+    {
+      "persona": "Sarah - Local Journalist",
+      "analysis": {
+        "action_items": [
+          {
+            "category": "content",
+            "priority": "low",
+            "issue": "Transcript lacks timestamps for video correlation",
+            "location": "Transcript",
+            "recommendation": "Consider adding missing feature or content"
+          }
+        ],
+        "overall_score": 10,
+        "top_frustration": "None identified"
+      }
+    }
+  ]
+}

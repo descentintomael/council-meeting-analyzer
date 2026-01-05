@@ -1,0 +1,99 @@
+---
+interface Props {
+  id: number;
+  title: string;
+  date: string;
+  type: string;
+  summary: string[];
+  voteCount: number;
+  topics: string[];
+}
+
+const { id, title, date, type, summary, voteCount, topics } = Astro.props;
+// Ensure base URL ends with /
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+
+// Format date for display
+const formattedDate = date ? new Date(date).toLocaleDateString('en-US', {
+  weekday: 'short',
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric'
+}) : 'Date unknown';
+
+// Get first summary bullet as preview
+const previewText = summary.length > 0 ? summary[0] : 'No summary available';
+---
+
+<a href={`${base}meetings/${id}`} class="card bg-base-200 hover:bg-base-300 transition-colors border border-base-300 hover:border-primary/50">
+  <div class="card-body p-4">
+    <!-- Header -->
+    <div class="flex items-start justify-between gap-2">
+      <div class="flex-1 min-w-0">
+        <h3 class="card-title text-base font-semibold text-base-content line-clamp-1">
+          {title}
+        </h3>
+        <p class="text-sm text-base-content/60 mt-1">
+          {formattedDate}
+        </p>
+      </div>
+      <span class="badge badge-outline badge-primary shrink-0">
+        {type}
+      </span>
+    </div>
+
+    <!-- Summary preview -->
+    <p class="text-sm text-base-content/80 line-clamp-2 mt-2">
+      {previewText}
+    </p>
+
+    <!-- Footer with stats and topics -->
+    <div class="flex items-center justify-between mt-3 pt-3 border-t border-base-300">
+      <div class="flex items-center gap-3 text-xs text-base-content/60">
+        {voteCount > 0 && (
+          <span class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            {voteCount} vote{voteCount !== 1 ? 's' : ''}
+          </span>
+        )}
+        {summary.length > 0 && (
+          <span class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+            </svg>
+            {summary.length} point{summary.length !== 1 ? 's' : ''}
+          </span>
+        )}
+      </div>
+
+      {topics.length > 0 && (
+        <div class="flex flex-wrap gap-1 justify-end max-w-[50%]">
+          {topics.slice(0, 3).map(topic => (
+            <span class="badge badge-sm badge-ghost">{topic}</span>
+          ))}
+          {topics.length > 3 && (
+            <span class="badge badge-sm badge-ghost">+{topics.length - 3}</span>
+          )}
+        </div>
+      )}
+    </div>
+  </div>
+</a>
+
+<style>
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

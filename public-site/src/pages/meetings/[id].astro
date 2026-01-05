@@ -1,0 +1,272 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import VoteTable from '../../components/VoteTable.astro';
+import meetingsData from '../../data/meetings.json';
+
+export function getStaticPaths() {
+  return meetingsData.meetings.map(meeting => ({
+    params: { id: String(meeting.id) },
+    props: { meeting }
+  }));
+}
+
+interface Props {
+  meeting: typeof meetingsData.meetings[0];
+}
+
+const { meeting } = Astro.props;
+// Ensure base URL ends with /
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+
+// Get recent meetings (excluding current, sorted by date)
+const recentMeetings = meetingsData.meetings
+  .filter(m => m.id !== meeting.id)
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  .slice(0, 5);
+
+// Format date
+const formattedDate = meeting.date ? new Date(meeting.date).toLocaleDateString('en-US', {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+}) : 'Date unknown';
+
+// Short date format for recent meetings
+function formatShortDate(date: string | null): string {
+  if (!date) return 'Unknown';
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
+// Format duration
+function formatDuration(seconds: number | null): string {
+  if (!seconds) return 'Unknown';
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
+---
+
+<BaseLayout title={meeting.title}>
+  <!-- Back navigation -->
+  <a href={base} class="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary mb-4 group">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    Back to Meetings
+  </a>
+
+  <!-- Breadcrumbs navigation -->
+  <nav class="breadcrumbs text-sm mb-4" aria-label="Breadcrumb">
+    <ul class="flex flex-wrap items-center gap-2">
+      <li>
+        <a href={base} class="link link-hover text-base-content/60 hover:text-primary">
+          All Meetings
+        </a>
+      </li>
+      <li class="text-base-content/40">/</li>
+      <li>
+        <a href={`${base}?type=${encodeURIComponent(meeting.type || '')}`} class="link link-hover text-base-content/60 hover:text-primary">
+          {meeting.type || 'Unknown'}
+        </a>
+      </li>
+      <li class="text-base-content/40">/</li>
+      <li class="text-base-content truncate max-w-[200px] sm:max-w-xs" aria-current="page">
+        {meeting.title}
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Meeting header -->
+  <header class="mb-8">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold text-base-content mb-2">
+          {meeting.title}
+        </h1>
+        <div class="flex flex-wrap items-center gap-3 text-base-content/60">
+          <span>{formattedDate}</span>
+          <span class="badge badge-outline badge-primary">{meeting.type}</span>
+          {meeting.duration && (
+            <span class="text-sm">{formatDuration(meeting.duration)}</span>
+          )}
+        </div>
+      </div>
+      {meeting.videoUrl && (
+        <a
+          href={meeting.videoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary btn-sm min-h-11"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Watch Video
+        </a>
+      )}
+    </div>
+
+    <!-- Topics -->
+    {meeting.topics.length > 0 && (
+      <div class="flex flex-wrap gap-2 mt-4">
+        {meeting.topics.map(topic => (
+          <span class="badge badge-ghost">{topic}</span>
+        ))}
+      </div>
+    )}
+  </header>
+
+  <div class="grid gap-8 lg:grid-cols-3">
+    <!-- Main content - constrained width for readability -->
+    <div class="lg:col-span-2 space-y-8 max-w-3xl">
+      <!-- Summary -->
+      {meeting.summary.length > 0 && (
+        <section>
+          <h2 class="text-xl font-semibold text-base-content mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Summary
+          </h2>
+          <div class="bg-base-200 rounded-box p-4 border border-base-300">
+            <ul class="space-y-2">
+              {meeting.summary.map(bullet => (
+                <li class="flex gap-2 text-sm">
+                  <span class="text-primary shrink-0">•</span>
+                  <span>{bullet}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      <!-- Votes -->
+      <section>
+        <h2 class="text-xl font-semibold text-base-content mb-4 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          </svg>
+          Votes ({meeting.votes?.length || 0})
+        </h2>
+        <div class="bg-base-200 rounded-box border border-base-300 overflow-hidden">
+          <VoteTable votes={meeting.votes || []} />
+        </div>
+      </section>
+
+      <!-- Transcript -->
+      {meeting.transcript && (
+        <section>
+          <h2 class="text-xl font-semibold text-base-content mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Full Transcript
+          </h2>
+          <details class="bg-base-200 rounded-box border border-base-300">
+            <summary class="p-4 cursor-pointer hover:bg-base-300 transition-colors font-medium">
+              Click to expand transcript ({Math.round(meeting.transcript.length / 1000)}k characters)
+            </summary>
+            <div class="p-4 pt-0 border-t border-base-300">
+              <div
+                class="prose prose-sm prose-invert max-w-none text-base-content/80 max-h-[600px] overflow-y-auto"
+                data-pagefind-body
+              >
+                {meeting.transcript.split('\n\n').map(paragraph => (
+                  <p class="mb-3">{paragraph}</p>
+                ))}
+              </div>
+            </div>
+          </details>
+        </section>
+      )}
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="space-y-6">
+      <!-- Quick stats -->
+      <div class="bg-base-200 rounded-box p-4 border border-base-300">
+        <h3 class="font-semibold text-base-content mb-3">Meeting Info</h3>
+        <dl class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <dt class="text-base-content/60">Date</dt>
+            <dd>{meeting.date || 'Unknown'}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-base-content/60">Type</dt>
+            <dd>{meeting.type || 'Unknown'}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-base-content/60">Duration</dt>
+            <dd>{formatDuration(meeting.duration)}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-base-content/60">Votes</dt>
+            <dd>{meeting.votes?.length || 0}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-base-content/60">Summary Points</dt>
+            <dd>{meeting.summary.length}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Video link -->
+      {meeting.videoUrl && (
+        <div class="bg-base-200 rounded-box p-4 border border-base-300">
+          <h3 class="font-semibold text-base-content mb-3">Watch Recording</h3>
+          <a
+            href={meeting.videoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary btn-block btn-sm min-h-11"
+          >
+            Open in Granicus
+          </a>
+        </div>
+      )}
+
+      <!-- Recent meetings -->
+      <div class="bg-base-200 rounded-box p-4 border border-base-300">
+        <h3 class="font-semibold text-base-content mb-3">Recent Meetings</h3>
+        <ul class="space-y-3">
+          {recentMeetings.map(m => (
+            <li>
+              <a
+                href={`${base}meetings/${m.id}`}
+                class="block hover:bg-base-300 -mx-2 px-2 py-1 rounded transition-colors"
+              >
+                <div class="text-sm font-medium text-base-content line-clamp-1">
+                  {m.type}
+                </div>
+                <div class="text-xs text-base-content/60">
+                  {formatShortDate(m.date)}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a
+          href={base}
+          class="btn btn-ghost btn-sm btn-block mt-3 min-h-11"
+        >
+          View all meetings
+        </a>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  /* Pagefind metadata */
+  [data-pagefind-body] {
+    --pagefind-body: true;
+  }
+</style>

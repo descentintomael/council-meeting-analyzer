@@ -1,0 +1,133 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  baseUrl: string;
+  preserveParams?: Record<string, string>;
+}
+
+const { currentPage, totalPages, baseUrl, preserveParams = {} } = Astro.props;
+
+// Build URL with preserved params
+function buildUrl(page: number): string {
+  const params = new URLSearchParams();
+
+  // Preserve existing params (like type filter)
+  Object.entries(preserveParams).forEach(([key, value]) => {
+    if (value) params.set(key, value);
+  });
+
+  // Add page param (skip for page 1)
+  if (page > 1) {
+    params.set('page', String(page));
+  }
+
+  const queryString = params.toString();
+  return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+}
+
+const hasPrev = currentPage > 1;
+const hasNext = currentPage < totalPages;
+
+// Calculate visible page numbers (show up to 5 pages centered around current)
+const pageNumbers: (number | 'ellipsis')[] = [];
+const maxVisible = 5;
+
+if (totalPages <= maxVisible) {
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
+} else {
+  // Always show first page
+  pageNumbers.push(1);
+
+  // Calculate range around current page
+  let start = Math.max(2, currentPage - 1);
+  let end = Math.min(totalPages - 1, currentPage + 1);
+
+  // Adjust if at edges
+  if (currentPage <= 3) {
+    end = 4;
+  } else if (currentPage >= totalPages - 2) {
+    start = totalPages - 3;
+  }
+
+  // Add ellipsis if needed
+  if (start > 2) {
+    pageNumbers.push('ellipsis');
+  }
+
+  // Add middle pages
+  for (let i = start; i <= end; i++) {
+    pageNumbers.push(i);
+  }
+
+  // Add ellipsis if needed
+  if (end < totalPages - 1) {
+    pageNumbers.push('ellipsis');
+  }
+
+  // Always show last page
+  pageNumbers.push(totalPages);
+}
+---
+
+{totalPages > 1 && (
+  <nav class="flex flex-wrap justify-center items-center gap-2 mt-6 sm:mt-8" aria-label="Pagination">
+    <!-- Previous button -->
+    <a
+      href={hasPrev ? buildUrl(currentPage - 1) : undefined}
+      class:list={[
+        "btn btn-sm min-h-11 min-w-11",
+        hasPrev ? "btn-ghost" : "btn-disabled"
+      ]}
+      aria-label="Previous page"
+      aria-disabled={!hasPrev}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </a>
+
+    <!-- Page numbers - hidden on very small screens, show current/total instead -->
+    <div class="hidden sm:flex items-center gap-1">
+      {pageNumbers.map((page, index) => (
+        page === 'ellipsis' ? (
+          <span class="px-2 text-base-content/40">...</span>
+        ) : (
+          <a
+            href={buildUrl(page)}
+            class:list={[
+              "btn btn-sm min-h-11 min-w-11",
+              page === currentPage ? "btn-primary" : "btn-ghost"
+            ]}
+            aria-label={`Page ${page}`}
+            aria-current={page === currentPage ? "page" : undefined}
+          >
+            {page}
+          </a>
+        )
+      ))}
+    </div>
+
+    <!-- Mobile page indicator -->
+    <span class="sm:hidden text-sm text-base-content/70 px-2">
+      Page {currentPage} of {totalPages}
+    </span>
+
+    <!-- Next button -->
+    <a
+      href={hasNext ? buildUrl(currentPage + 1) : undefined}
+      class:list={[
+        "btn btn-sm min-h-11 min-w-11",
+        hasNext ? "btn-ghost" : "btn-disabled"
+      ]}
+      aria-label="Next page"
+      aria-disabled={!hasNext}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </a>
+  </nav>
+)}

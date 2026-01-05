@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold text-base-content mb-6">About This Archive</h1>
+
+    <!-- Disclaimer alert -->
+    <div class="alert alert-info mb-8">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <div>
+        <p class="font-semibold">Independent Research Project</p>
+        <p class="text-sm">
+          This site is <strong>not affiliated with, endorsed by, or connected to the City of Chico</strong> in any way.
+          It is an independent research project created for educational and civic engagement purposes.
+        </p>
+      </div>
+    </div>
+
+    <div class="prose prose-invert max-w-none">
+      <section class="mb-8">
+        <h2 class="text-xl font-semibold text-base-content mb-3">What is this?</h2>
+        <p class="text-base-content/80 mb-4">
+          This is an <strong>unofficial</strong>, independently-created searchable archive of Chico City Council meetings.
+          It includes AI-generated transcripts, voting records, and meeting summaries to help residents
+          and researchers understand what's happening in local government.
+        </p>
+        <p class="text-base-content/80 mb-4">
+          This is a personal project built for fun and to explore civic technology. It is not an official
+          government resource and should not be treated as such.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-xl font-semibold text-base-content mb-3">Data Sources</h2>
+        <p class="text-base-content/80 mb-4">
+          Meeting videos are sourced from the official
+          <a href="https://chico-ca.granicus.com" class="link link-primary" target="_blank" rel="noopener">
+            Chico Granicus portal
+          </a>.
+          Transcripts are generated using AI speech recognition (Whisper), and summaries
+          are generated using large language models.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-xl font-semibold text-base-content mb-3">Accuracy</h2>
+        <div class="alert alert-warning mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>
+            Transcripts and summaries are AI-generated and may contain errors.
+            Always verify important information against the original video recordings.
+          </span>
+        </div>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-xl font-semibold text-base-content mb-3">Features</h2>
+        <ul class="list-disc list-inside text-base-content/80 space-y-2">
+          <li>Full-text search across all meeting transcripts</li>
+          <li>Filter meetings by type (City Council, Planning Commission, etc.)</li>
+          <li>View voting records with individual council member votes</li>
+          <li>AI-generated meeting summaries highlighting key decisions</li>
+          <li>Direct links to original video recordings</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-base-content mb-3">Open Source</h2>
+        <p class="text-base-content/80">
+          This project is open source. The code is available for others who want to
+          create similar archives for their local governments.
+        </p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>

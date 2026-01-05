@@ -48,3 +48,8 @@ Thumbs.db
 
 # Claude Code settings
 .claude/
+
+# Public site build artifacts
+public-site/dist/
+public-site/node_modules/
+public-site/.astro/

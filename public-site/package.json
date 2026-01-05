@@ -1,0 +1,29 @@
+{
+  "name": "chico-council-archive",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "export": "python3 scripts/export_public_data.py",
+    "dev": "npm run export && astro dev",
+    "build": "astro build && npx pagefind --site dist",
+    "build:local": "npm run export && npm run build",
+    "preview": "astro preview",
+    "test": "npm run build:local && npx playwright test tests/links.spec.js",
+    "test:ui": "npx playwright test --ui",
+    "test:personas": "npm run build:local && npx playwright test tests/personas/",
+    "test:personas:report": "node tests/personas/persona-runner.js --report-only",
+    "test:personas:full": "npm run build:local && node tests/personas/persona-runner.js",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^5.16.6",
+    "daisyui": "^5.5.14",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "pagefind": "^1.4.0",
+    "playwright": "^1.57.0"
+  }
+}

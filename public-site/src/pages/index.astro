@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MeetingCard from '../components/MeetingCard.astro';
+import FilterBar from '../components/FilterBar.astro';
+import HeroSearch from '../components/HeroSearch.astro';
+import Pagination from '../components/Pagination.astro';
+import meetingsData from '../data/meetings.json';
+
+// Pagination config
+const ITEMS_PER_PAGE = 24;
+
+// Get query params for filtering and pagination
+const url = Astro.url;
+const selectedType = url.searchParams.get('type') || undefined;
+const currentPage = Math.max(1, Number(url.searchParams.get('page')) || 1);
+
+// Ensure base URL ends with /
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+
+// Get unique meeting types
+const meetingTypes = [...new Set(
+  meetingsData.meetings
+    .map(m => m.type)
+    .filter((t): t is string => Boolean(t))
+)].sort();
+
+// Filter meetings
+let filteredMeetings = meetingsData.meetings;
+if (selectedType) {
+  filteredMeetings = filteredMeetings.filter(m => m.type === selectedType);
+}
+
+// Pagination
+const totalPages = Math.ceil(filteredMeetings.length / ITEMS_PER_PAGE);
+const validPage = Math.min(currentPage, totalPages || 1);
+const paginatedMeetings = filteredMeetings.slice(
+  (validPage - 1) * ITEMS_PER_PAGE,
+  validPage * ITEMS_PER_PAGE
+);
+
+// Stats
+const totalMeetings = meetingsData.metadata.totalMeetings;
+const dateRange = meetingsData.metadata.dateRange;
+
+// Preserve params for pagination links
+const preserveParams: Record<string, string> = {};
+if (selectedType) preserveParams.type = selectedType;
+---
+
+<BaseLayout title="Meeting Archive">
+  <!-- Hero section with search -->
+  <section class="bg-base-200 rounded-box p-4 sm:p-6 md:p-8 mb-6 sm:mb-8 text-center">
+    <!-- Disclaimer badge -->
+    <div class="badge badge-outline badge-sm mb-3 sm:mb-4 text-base-content/60">
+      Unofficial &bull; Independent Research Project
+    </div>
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-base-content mb-3 sm:mb-4">
+      Chico City Council Archive
+    </h1>
+    <p class="text-base sm:text-lg text-base-content/70 mb-4 sm:mb-6 max-w-2xl mx-auto px-2 sm:px-0">
+      Search and browse {totalMeetings} council meetings from {dateRange.start} to {dateRange.end}.
+      Full transcripts, voting records, and AI-generated summaries.
+    </p>
+    <HeroSearch />
+    <p class="text-xs text-base-content/50 mt-3 sm:mt-4">
+      Not affiliated with the City of Chico &bull; <a href={`${base}about`} class="link link-hover">Learn more</a>
+    </p>
+  </section>
+
+  <!-- Filter chips -->
+  <FilterBar
+    meetingTypes={meetingTypes}
+    selectedType={selectedType}
+    totalCount={totalMeetings}
+  />
+
+  <!-- Results count -->
+  <div class="flex justify-between items-center mb-4">
+    <p class="text-sm text-base-content/60">
+      {selectedType
+        ? `Showing ${filteredMeetings.length} ${selectedType} meeting${filteredMeetings.length !== 1 ? 's' : ''}`
+        : `Showing ${paginatedMeetings.length} of ${filteredMeetings.length} meetings`
+      }
+      {totalPages > 1 && ` (page ${validPage} of ${totalPages})`}
+    </p>
+  </div>
+
+  <!-- Meeting grid -->
+  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    {paginatedMeetings.map(meeting => (
+      <MeetingCard
+        id={meeting.id}
+        title={meeting.title}
+        date={meeting.date}
+        type={meeting.type || 'Unknown'}
+        summary={meeting.summary}
+        voteCount={meeting.votes?.length || 0}
+        topics={meeting.topics}
+      />
+    ))}
+  </div>
+
+  {filteredMeetings.length === 0 && (
+    <div class="text-center py-12">
+      <p class="text-base-content/60">No meetings found matching your filters.</p>
+      <a href={base} class="btn btn-primary btn-sm min-h-11 mt-4">Clear filters</a>
+    </div>
+  )}
+
+  <!-- Pagination -->
+  <Pagination
+    currentPage={validPage}
+    totalPages={totalPages}
+    baseUrl={base}
+    preserveParams={preserveParams}
+  />
+</BaseLayout>

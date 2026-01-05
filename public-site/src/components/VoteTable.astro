@@ -1,0 +1,112 @@
+---
+interface Vote {
+  motion: string;
+  result: string;
+  yesCount: number;
+  noCount: number;
+  votes: Record<string, string>;
+}
+
+interface Props {
+  votes: Vote[];
+}
+
+const { votes } = Astro.props;
+
+// Get result indicator color
+function getResultColor(result: string): { dot: string; text: string; bg: string } {
+  const r = result.toLowerCase();
+  if (r.includes('passed') || r.includes('approved')) {
+    return { dot: 'bg-success', text: 'text-success', bg: 'bg-success/10' };
+  }
+  if (r.includes('failed') || r.includes('denied')) {
+    return { dot: 'bg-error', text: 'text-error', bg: 'bg-error/10' };
+  }
+  return { dot: 'bg-warning', text: 'text-warning', bg: 'bg-warning/10' };
+}
+
+// Calculate vote percentages
+function getVotePercent(yes: number, no: number): { yesPercent: number; noPercent: number } {
+  const total = yes + no;
+  if (total === 0) return { yesPercent: 50, noPercent: 50 };
+  return {
+    yesPercent: Math.round((yes / total) * 100),
+    noPercent: Math.round((no / total) * 100)
+  };
+}
+---
+
+{votes.length > 0 ? (
+  <div class="overflow-x-auto">
+    <table class="table table-zebra w-full">
+      <thead>
+        <tr class="bg-base-300">
+          <th class="text-base-content">Motion</th>
+          <th class="text-base-content text-center w-32">Result</th>
+          <th class="text-base-content text-center w-36">Vote</th>
+        </tr>
+      </thead>
+      <tbody>
+        {votes.map((vote, index) => {
+          const colors = getResultColor(vote.result);
+          const { yesPercent, noPercent } = getVotePercent(vote.yesCount, vote.noCount);
+          return (
+            <tr class="hover">
+              <td>
+                <div class="max-w-lg">
+                  <p class="text-sm">{vote.motion || 'Motion not specified'}</p>
+                  {Object.keys(vote.votes).length > 0 && (
+                    <details class="mt-2 vote-details">
+                      <summary class="text-xs text-base-content/60 cursor-pointer hover:text-primary">
+                        View individual votes
+                      </summary>
+                      <div class="mt-2 flex flex-wrap gap-2">
+                        {Object.entries(vote.votes).map(([member, v]) => (
+                          <span class:list={[
+                            "badge badge-sm",
+                            v.toLowerCase() === 'yes' ? 'badge-success' :
+                            v.toLowerCase() === 'no' ? 'badge-error' : 'badge-ghost'
+                          ]}>
+                            {member}: {v}
+                          </span>
+                        ))}
+                      </div>
+                    </details>
+                  )}
+                </div>
+              </td>
+              <td class="text-center">
+                <!-- Visual dot indicator with text -->
+                <div class:list={["inline-flex items-center gap-2 px-3 py-1 rounded-full", colors.bg]}>
+                  <span class:list={["w-2.5 h-2.5 rounded-full", colors.dot]}></span>
+                  <span class:list={["text-sm font-medium capitalize", colors.text]}>
+                    {vote.result.toLowerCase().includes('passed') ? 'Passed' :
+                     vote.result.toLowerCase().includes('failed') ? 'Failed' :
+                     vote.result}
+                  </span>
+                </div>
+              </td>
+              <td class="text-center">
+                <div class="flex flex-col items-center gap-1">
+                  <!-- Vote counts -->
+                  <div class="flex items-center gap-2 text-sm">
+                    <span class="text-success font-medium">{vote.yesCount}</span>
+                    <span class="text-base-content/40">-</span>
+                    <span class="text-error font-medium">{vote.noCount}</span>
+                  </div>
+                  <!-- Visual vote bar -->
+                  <div class="flex h-1.5 rounded-full overflow-hidden w-20 bg-base-300">
+                    <div class="bg-success" style={`width: ${yesPercent}%`}></div>
+                    <div class="bg-error" style={`width: ${noPercent}%`}></div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+) : (
+  <p class="text-base-content/60 text-sm italic">No votes recorded for this meeting.</p>
+)}

@@ -1,0 +1,169 @@
+---
+// Hero search component - prominent search for the homepage hero section
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+---
+
+<div id="search-container" class="relative w-full max-w-xl mx-auto">
+  <label for="search-input" class="sr-only">Search meeting transcripts</label>
+  <div class="relative">
+    <svg
+      class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40 pointer-events-none"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+    <input
+      type="search"
+      id="search-input"
+      name="search"
+      placeholder="Search meeting transcripts..."
+      autocomplete="off"
+      class="input input-bordered input-lg w-full pl-12 pr-4 bg-base-100 focus:border-primary focus:ring-2 focus:ring-primary/20"
+    />
+  </div>
+  <div
+    id="search-results"
+    class="absolute z-50 mt-2 w-full max-h-96 overflow-auto bg-base-200 rounded-box shadow-xl border border-base-300 hidden"
+    role="listbox"
+    aria-label="Search results"
+  ></div>
+  <p id="search-status" class="sr-only" aria-live="polite"></p>
+</div>
+
+<script is:inline define:vars={{ base }}>
+  // Pagefind integration for hero search
+  async function initHeroSearch() {
+    const input = document.getElementById('search-input');
+    const results = document.getElementById('search-results');
+    const status = document.getElementById('search-status');
+    const container = document.getElementById('search-container');
+
+    if (!input || !results) return;
+
+    let pagefind = null;
+    let debounceTimer;
+
+    // Try to load Pagefind
+    try {
+      const pagefindPath = base + 'pagefind/pagefind.js';
+      pagefind = await import(/* @vite-ignore */ pagefindPath);
+      await pagefind.init();
+      input.removeAttribute('disabled');
+      input.placeholder = 'Search meeting transcripts...';
+    } catch (e) {
+      // Pagefind not available (dev mode)
+      input.placeholder = 'Search (available after build)';
+      input.setAttribute('disabled', 'true');
+      input.classList.add('opacity-50');
+      return;
+    }
+
+    // Handle search input
+    input.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(async () => {
+        const query = input.value.trim();
+
+        if (query.length < 2) {
+          results.classList.add('hidden');
+          results.innerHTML = '';
+          status.textContent = '';
+          return;
+        }
+
+        if (!pagefind) return;
+
+        try {
+          const search = await pagefind.search(query);
+
+          if (search.results.length === 0) {
+            results.innerHTML = '<p class="p-4 text-sm text-base-content/60">No results found for "' + query + '"</p>';
+            results.classList.remove('hidden');
+            status.textContent = 'No results found';
+            return;
+          }
+
+          const items = await Promise.all(search.results.slice(0, 10).map(r => r.data()));
+          results.innerHTML = items.map((item, index) => `
+            <a
+              href="${item.url}"
+              class="search-result block p-4 hover:bg-base-300 border-b border-base-300 last:border-0 focus:bg-base-300 focus:outline-none"
+              role="option"
+              tabindex="0"
+              data-pagefind-result
+            >
+              <div class="font-medium">${item.meta?.title || 'Meeting'}</div>
+              <div class="text-sm text-base-content/60 line-clamp-2 mt-1">${item.excerpt}</div>
+            </a>
+          `).join('');
+          results.classList.remove('hidden');
+          status.textContent = search.results.length + ' results found';
+        } catch (err) {
+          console.error('Search error:', err);
+          results.innerHTML = '<p class="p-4 text-sm text-error">Search error. Please try again.</p>';
+          results.classList.remove('hidden');
+        }
+      }, 200);
+    });
+
+    // Keyboard navigation
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        results.classList.add('hidden');
+        input.blur();
+      } else if (e.key === 'ArrowDown' && !results.classList.contains('hidden')) {
+        e.preventDefault();
+        const firstResult = results.querySelector('a');
+        if (firstResult) firstResult.focus();
+      }
+    });
+
+    // Handle navigation within results
+    results.addEventListener('keydown', (e) => {
+      const links = Array.from(results.querySelectorAll('a'));
+      const currentIndex = links.indexOf(document.activeElement);
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const next = links[currentIndex + 1];
+        if (next) next.focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (currentIndex === 0) {
+          input.focus();
+        } else {
+          const prev = links[currentIndex - 1];
+          if (prev) prev.focus();
+        }
+      } else if (e.key === 'Escape') {
+        results.classList.add('hidden');
+        input.focus();
+      }
+    });
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+      if (!container.contains(e.target)) {
+        results.classList.add('hidden');
+      }
+    });
+
+    // Close on focus outside
+    document.addEventListener('focusin', (e) => {
+      if (!container.contains(e.target)) {
+        results.classList.add('hidden');
+      }
+    });
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHeroSearch);
+  } else {
+    initHeroSearch();
+  }
+</script>

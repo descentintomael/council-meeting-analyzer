@@ -1,0 +1,36 @@
+---
+interface Props {
+  meetingTypes: string[];
+  selectedType?: string;
+  totalCount: number;
+}
+
+const { meetingTypes, selectedType, totalCount } = Astro.props;
+// Ensure base URL ends with /
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+---
+
+<!-- Filter chips - touch-target friendly (min 44px) -->
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <span class="text-sm text-base-content/60 mr-2">Filter by type:</span>
+  <a
+    href={base}
+    class:list={[
+      "btn btn-sm min-h-11 px-4",
+      !selectedType ? "btn-primary" : "btn-ghost"
+    ]}
+  >
+    All ({totalCount})
+  </a>
+  {meetingTypes.map(type => (
+    <a
+      href={`${base}?type=${encodeURIComponent(type)}`}
+      class:list={[
+        "btn btn-sm min-h-11 px-4",
+        selectedType === type ? "btn-primary" : "btn-ghost"
+      ]}
+    >
+      {type}
+    </a>
+  ))}
+</div>
