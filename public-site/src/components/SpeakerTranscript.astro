@@ -1,0 +1,94 @@
+---
+/**
+ * SpeakerTranscript - Displays speaker-annotated transcript segments
+ * Groups consecutive segments by the same speaker and shows confidence indicators
+ */
+
+interface Segment {
+  speaker: string;
+  confidence: number;
+  text: string;
+  start?: number;
+}
+
+interface Props {
+  segments: Segment[];
+}
+
+const { segments } = Astro.props;
+
+// Group consecutive segments by speaker to reduce visual noise
+interface SpeakerGroup {
+  speaker: string;
+  confidence: number;
+  texts: string[];
+}
+
+function groupBySpeaker(segments: Segment[]): SpeakerGroup[] {
+  const groups: SpeakerGroup[] = [];
+
+  for (const seg of segments) {
+    const last = groups[groups.length - 1];
+    if (last && last.speaker === seg.speaker) {
+      // Same speaker - append text and use minimum confidence
+      last.texts.push(seg.text);
+      last.confidence = Math.min(last.confidence, seg.confidence);
+    } else {
+      // New speaker - create new group
+      groups.push({
+        speaker: seg.speaker,
+        confidence: seg.confidence,
+        texts: [seg.text]
+      });
+    }
+  }
+  return groups;
+}
+
+const grouped = groupBySpeaker(segments);
+
+// Confidence indicator styling
+function confidenceClass(conf: number): string {
+  if (conf >= 0.8) return "text-success";
+  if (conf >= 0.5) return "text-warning";
+  return "text-base-content/50";
+}
+
+function confidenceIcon(conf: number): string {
+  if (conf >= 0.8) return "●";  // High confidence
+  if (conf >= 0.5) return "◐";  // Medium confidence
+  return "○";  // Low confidence
+}
+---
+
+<!-- Confidence legend -->
+<div class="text-xs text-base-content/60 mb-4 pb-3 border-b border-base-300 flex flex-wrap items-center gap-x-4 gap-y-1">
+  <span class="font-medium">Speaker confidence:</span>
+  <span class="flex items-center gap-1">
+    <span class="text-success">●</span> High
+  </span>
+  <span class="flex items-center gap-1">
+    <span class="text-warning">◐</span> Medium
+  </span>
+  <span class="flex items-center gap-1">
+    <span class="text-base-content/50">○</span> Low
+  </span>
+</div>
+
+<!-- Speaker segments -->
+<div class="space-y-4">
+  {grouped.map(group => (
+    <div class="border-l-2 border-primary/30 pl-4 py-1">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="font-semibold text-primary text-sm">{group.speaker}</span>
+        <span
+          class={`text-xs cursor-help ${confidenceClass(group.confidence)}`}
+          title={`Speaker identification confidence: ${Math.round(group.confidence * 100)}%`}
+        >
+          {confidenceIcon(group.confidence)}
+        </span>
+      </div>
+      <p class="text-base-content/80 text-sm leading-relaxed">{group.texts.join(' ')}</p>
+    </div>
+  ))}
+</div>

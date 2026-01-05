@@ -15,6 +15,7 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent.parent  # council-meeting-analyzer/
 DB_PATH = PROJECT_ROOT / "data" / "meetings.db"
+TRANSCRIPTS_DIR = PROJECT_ROOT / "data" / "transcripts"
 OUTPUT_PATH = SCRIPT_DIR.parent / "src" / "data" / "meetings.json"
 
 
@@ -62,6 +63,9 @@ def export_meetings():
         # Get validated transcript for search indexing
         transcript = get_transcript(conn, clip_id)
 
+        # Get speaker-annotated diarization if available
+        diarization = get_diarization(clip_id)
+
         # Build meeting object
         meeting_data = {
             "id": clip_id,
@@ -74,6 +78,7 @@ def export_meetings():
             "votes": extract_votes(votes),
             "topics": extract_topics(alerts),
             "transcript": transcript,
+            "diarizedTranscript": diarization,
         }
 
         exported_meetings.append(meeting_data)
@@ -95,7 +100,10 @@ def export_meetings():
     with open(OUTPUT_PATH, "w") as f:
         json.dump(export_data, f, indent=2, default=str)
 
+    # Count meetings with diarization
+    diarized_count = sum(1 for m in exported_meetings if m.get("diarizedTranscript"))
     print(f"Exported {len(exported_meetings)} meetings to {OUTPUT_PATH}")
+    print(f"  - {diarized_count} meetings have speaker-annotated transcripts")
     return export_data
 
 
@@ -139,6 +147,34 @@ def get_transcript(conn, clip_id: int) -> str | None:
         return row["full_text"]
 
     return None
+
+
+def get_diarization(clip_id: int) -> list[dict] | None:
+    """Load speaker-annotated segments from diarization JSON file."""
+    diarization_path = TRANSCRIPTS_DIR / f"{clip_id}_diarization.json"
+    if not diarization_path.exists():
+        return None
+
+    try:
+        with open(diarization_path) as f:
+            data = json.load(f)
+
+        # Return simplified segments for frontend
+        segments = []
+        for seg in data.get("segments", []):
+            text = seg.get("text", "").strip()
+            if not text:  # Skip empty segments
+                continue
+            segments.append({
+                "speaker": seg.get("speaker_name") or seg.get("speaker_id", "Unknown"),
+                "confidence": seg.get("confidence", 0),
+                "text": text,
+                "start": seg.get("start"),
+            })
+        return segments if segments else None
+    except (json.JSONDecodeError, IOError) as e:
+        print(f"Warning: Could not load diarization for {clip_id}: {e}")
+        return None
 
 
 def extract_summary_bullets(analysis_results: list[dict]) -> list[str]:

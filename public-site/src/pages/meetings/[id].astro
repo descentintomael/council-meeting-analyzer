@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import VoteTable from '../../components/VoteTable.astro';
+import SpeakerTranscript from '../../components/SpeakerTranscript.astro';
 import meetingsData from '../../data/meetings.json';
 
 export function getStaticPaths() {
@@ -162,26 +163,38 @@ function formatDuration(seconds: number | null): string {
       </section>
 
       <!-- Transcript -->
-      {meeting.transcript && (
+      {(meeting.diarizedTranscript || meeting.transcript) && (
         <section>
           <h2 class="text-xl font-semibold text-base-content mb-4 flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Full Transcript
+            {meeting.diarizedTranscript && (
+              <span class="badge badge-sm badge-primary">Speaker Annotated</span>
+            )}
           </h2>
           <details class="bg-base-200 rounded-box border border-base-300">
             <summary class="p-4 cursor-pointer hover:bg-base-300 transition-colors font-medium">
-              Click to expand transcript ({Math.round(meeting.transcript.length / 1000)}k characters)
+              {meeting.diarizedTranscript
+                ? `Click to expand (${meeting.diarizedTranscript.length.toLocaleString()} speaker segments)`
+                : `Click to expand transcript (${Math.round((meeting.transcript?.length || 0) / 1000)}k characters)`
+              }
             </summary>
             <div class="p-4 pt-0 border-t border-base-300">
               <div
-                class="prose prose-sm prose-invert max-w-none text-base-content/80 max-h-[600px] overflow-y-auto"
+                class="max-h-[600px] overflow-y-auto"
                 data-pagefind-body
               >
-                {meeting.transcript.split('\n\n').map(paragraph => (
-                  <p class="mb-3">{paragraph}</p>
-                ))}
+                {meeting.diarizedTranscript ? (
+                  <SpeakerTranscript segments={meeting.diarizedTranscript} />
+                ) : (
+                  <div class="prose prose-sm prose-invert max-w-none text-base-content/80">
+                    {meeting.transcript?.split('\n\n').map(paragraph => (
+                      <p class="mb-3">{paragraph}</p>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </details>
