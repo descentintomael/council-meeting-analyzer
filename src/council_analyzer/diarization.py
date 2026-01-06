@@ -6,9 +6,19 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import ollama
+import torch
 from rich.console import Console
 
 from .config import config
+
+# Patch torch.load to work with pyannote models on PyTorch 2.6+
+# PyTorch 2.6 changed weights_only default to True, which breaks pyannote model loading.
+# This is safe since we're loading from trusted Hugging Face models.
+_original_torch_load = torch.load
+def _patched_torch_load(*args, **kwargs):
+    kwargs['weights_only'] = False
+    return _original_torch_load(*args, **kwargs)
+torch.load = _patched_torch_load
 from .database import (
     get_agenda_items,
     get_meeting,
@@ -97,6 +107,8 @@ def run_pyannote_diarization(audio_path: Path) -> list[tuple[float, float, str]]
     """
     Run pyannote speaker diarization on audio file if available.
 
+    Converts audio to 16kHz mono WAV for reliable processing.
+
     Returns:
         List of (start, end, speaker_id) tuples
     """
@@ -107,28 +119,55 @@ def run_pyannote_diarization(audio_path: Path) -> list[tuple[float, float, str]]
     try:
         from pyannote.audio import Pipeline
         import torch
+        import subprocess
+        import tempfile
 
-        console.print("[cyan]Running pyannote speaker diarization...[/cyan]")
+        console.print("[cyan]Running pyannote speaker diarization (community-1)...[/cyan]")
 
         pipeline = Pipeline.from_pretrained(
-            "pyannote/speaker-diarization-3.1",
-            use_auth_token=config.HUGGINGFACE_TOKEN if hasattr(config, 'HUGGINGFACE_TOKEN') else None,
+            "pyannote/speaker-diarization-community-1",
+            token=config.HUGGINGFACE_TOKEN,
         )
 
-        # Use MPS (Apple Silicon) if available
-        if torch.backends.mps.is_available():
-            pipeline.to(torch.device("mps"))
-        elif torch.cuda.is_available():
+        # Note: MPS (Apple Silicon) is not reliably supported by pyannote
+        # and produces incorrect results. We intentionally use CPU only.
+        # CUDA is still supported for systems with NVIDIA GPUs.
+        if torch.cuda.is_available():
             pipeline.to(torch.device("cuda"))
 
-        diarization = pipeline(str(audio_path))
+        # Convert audio to 16kHz mono WAV for reliable processing
+        # MP3 files cause sample count errors with pyannote
+        console.print("[dim]Converting audio to 16kHz WAV...[/dim]")
+        with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
+            wav_path = tmp.name
 
-        segments = []
-        for turn, _, speaker in diarization.itertracks(yield_label=True):
-            segments.append((turn.start, turn.end, speaker))
+        try:
+            subprocess.run([
+                'ffmpeg', '-y', '-i', str(audio_path),
+                '-ar', '16000',  # 16kHz sample rate (pyannote preference)
+                '-ac', '1',      # mono
+                '-loglevel', 'error',
+                wav_path
+            ], capture_output=True, check=True)
 
-        console.print(f"[green]Found {len(set(s[2] for s in segments))} unique speakers[/green]")
-        return segments
+            console.print("[dim]Running neural diarization (this may take a while)...[/dim]")
+            result = pipeline(wav_path)
+
+            # pyannote 4.0 returns DiarizeOutput with speaker_diarization attribute
+            annotation = result.speaker_diarization
+
+            segments = []
+            for turn, _, speaker in annotation.itertracks(yield_label=True):
+                segments.append((turn.start, turn.end, speaker))
+
+            console.print(f"[green]Found {len(set(s[2] for s in segments))} unique speakers in {len(segments)} segments[/green]")
+            return segments
+
+        finally:
+            # Clean up temp file
+            import os
+            if os.path.exists(wav_path):
+                os.unlink(wav_path)
 
     except Exception as e:
         console.print(f"[yellow]Pyannote diarization failed: {e}[/yellow]")
@@ -274,16 +313,45 @@ def merge_speaker_identifications(
     result = DiarizationResult(clip_id=0)
     speaker_votes = {}  # Track votes for each pyannote speaker ID
 
-    # Create mapping from pyannote segments
+    # Create mapping from pyannote segments using midpoint matching
+    # Match each transcript segment to the pyannote segment containing its midpoint
     pyannote_map = {}  # segment_index -> pyannote_speaker_id
-    for start, end, speaker_id in pyannote_segments:
-        for i, seg in enumerate(transcript_segments):
-            seg_start = seg.get("start", 0) or 0
-            seg_end = seg.get("end", 0) or 0
-            if seg_start >= start and seg_end <= end:
+    for i, seg in enumerate(transcript_segments):
+        seg_start = seg.get("start", 0) or 0
+        seg_end = seg.get("end", 0) or 0
+        seg_mid = (seg_start + seg_end) / 2
+
+        # Find pyannote segment containing this midpoint
+        for start, end, speaker_id in pyannote_segments:
+            if start <= seg_mid <= end:
                 pyannote_map[i] = speaker_id
                 if speaker_id not in speaker_votes:
                     speaker_votes[speaker_id] = {}
+                break
+
+    # Fill gaps: propagate speaker to UNKNOWN segments using nearest neighbor
+    # This handles transcript segments that fall between pyannote speech regions
+    if pyannote_segments:
+        for i in range(len(transcript_segments)):
+            if i not in pyannote_map:
+                seg_mid = (transcript_segments[i].get("start", 0) +
+                          transcript_segments[i].get("end", 0)) / 2
+
+                # Find nearest pyannote segment by distance to midpoint
+                best_speaker = None
+                best_distance = float('inf')
+                for start, end, speaker_id in pyannote_segments:
+                    # Distance is min of distance to start or end
+                    dist = min(abs(seg_mid - start), abs(seg_mid - end))
+                    if dist < best_distance:
+                        best_distance = dist
+                        best_speaker = speaker_id
+
+                # Only assign if within 30 seconds of a speaker segment
+                if best_speaker and best_distance < 30:
+                    pyannote_map[i] = best_speaker
+                    if best_speaker not in speaker_votes:
+                        speaker_votes[best_speaker] = {}
 
     # Process each transcript segment
     for i, seg in enumerate(transcript_segments):

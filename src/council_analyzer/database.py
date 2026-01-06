@@ -396,3 +396,21 @@ def get_all_meetings() -> list[dict]:
             "SELECT * FROM meetings ORDER BY meeting_date DESC"
         ).fetchall()
         return [dict(row) for row in rows]
+
+
+def get_diarization_retry_count(clip_id: int) -> int:
+    """Count diarization attempts from processing_log.
+
+    Counts entries with 'started' or 'failed' status for diarization stage.
+    Used to determine if a meeting should be retried or marked as permanently failed.
+    """
+    with get_db() as conn:
+        result = conn.execute(
+            """
+            SELECT COUNT(*) as count FROM processing_log
+            WHERE clip_id = ? AND stage = 'diarize'
+            AND status IN ('started', 'failed')
+            """,
+            (clip_id,),
+        ).fetchone()
+        return result["count"] if result else 0

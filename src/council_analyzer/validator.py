@@ -201,8 +201,14 @@ def tier1_validate_segment(segment_text: str, agenda_title: str) -> dict:
     result = parse_json_response(response)
 
     if result:
+        # Ensure score is an integer (LLM may return string)
+        raw_score = result.get("score")
+        try:
+            score = int(raw_score) if raw_score is not None else 50
+        except (ValueError, TypeError):
+            score = 50
         return {
-            "score": result.get("score") or 50,
+            "score": score,
             "issues": result.get("issues") or [],
             "needs_deep_review": result.get("needs_deep_review") or False,
         }
@@ -243,8 +249,14 @@ def tier2_validate_segment(
     result = parse_json_response(response)
 
     if result:
+        # Ensure coherence_score is an integer (LLM may return string)
+        raw_score = result.get("coherence_score")
+        try:
+            coherence_score = int(raw_score) if raw_score is not None else 50
+        except (ValueError, TypeError):
+            coherence_score = 50
         return {
-            "coherence_score": result.get("coherence_score") or 50,
+            "coherence_score": coherence_score,
             "preferred_transcription": result.get("preferred_transcription") or "large_v3",
             "issues": result.get("issues") or [],
             "corrections": result.get("corrections") or {},

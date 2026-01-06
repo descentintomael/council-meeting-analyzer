@@ -57,3 +57,4 @@ Thumbs.db
 public-site/dist/
 public-site/node_modules/
 public-site/.astro/
+data/minutes/*.pdf

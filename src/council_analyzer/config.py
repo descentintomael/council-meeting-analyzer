@@ -45,8 +45,8 @@ class Config:
     ANALYSIS_TIMEOUT_SEC: int = 1800  # 30 min max per analysis
     HTTP_TIMEOUT_SEC: int = 30  # HTTP request timeout
 
-    # Hugging Face token for pyannote (optional - can use public models)
-    HUGGINGFACE_TOKEN: str | None = None  # Set via HF_TOKEN env var if needed
+    # Hugging Face token for pyannote speaker diarization (from environment)
+    HUGGINGFACE_TOKEN: str | None = None  # Set via HUGGINGFACE_TOKEN env var
 
     # Meeting types to process
     MEETING_TYPES: list = field(default_factory=lambda: [

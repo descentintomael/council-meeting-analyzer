@@ -25,6 +25,7 @@ from rich.table import Table
 
 PROJECT_ROOT = Path(__file__).parent.parent
 TRANSCRIPT_DIR = PROJECT_ROOT / "data" / "transcripts"
+MINUTES_DIR = PROJECT_ROOT / "data" / "minutes"
 
 console = Console()
 
@@ -128,6 +129,7 @@ class SpeakerIdentifier:
         self.segments: list[dict] = []
         self.profiles: dict[str, SpeakerProfile] = {}
         self.speaker_mapping: dict[str, str] = {}
+        self.minutes_data: dict | None = None
 
     def load_diarization(self) -> bool:
         """Load diarization file."""
@@ -155,6 +157,67 @@ class SpeakerIdentifier:
             profile.total_duration += (end - start)
 
         return True
+
+    def load_minutes_data(self) -> bool:
+        """Load minutes data for enhanced speaker identification."""
+        minutes_path = MINUTES_DIR / f"{self.clip_id}_minutes.json"
+        if minutes_path.exists():
+            with open(minutes_path) as f:
+                self.minutes_data = json.load(f)
+            console.print(f"  Loaded minutes: {len(self.minutes_data.get('public_speakers', []))} public speakers, "
+                         f"{len(self.minutes_data.get('council_members', []))} council members")
+            return True
+        return False
+
+    def match_speakers_with_minutes(self):
+        """Use minutes data to improve speaker identification."""
+        if not self.minutes_data:
+            return
+
+        minutes_speakers = self.minutes_data.get("public_speakers", [])
+        minutes_council = self.minutes_data.get("council_members", [])
+
+        # For each speaker with self-intro, try to match with minutes
+        for speaker_id, profile in self.profiles.items():
+            if profile.identified_role in ["Chair", "Clerk"]:
+                continue
+
+            # Check self-intro names against minutes speakers
+            for intro_name in profile.self_intro_names:
+                intro_parts = intro_name.lower().split()
+                intro_first = intro_parts[0] if intro_parts else ""
+                intro_last = intro_parts[-1] if len(intro_parts) > 1 else ""
+
+                # Check if matches a known public speaker from minutes
+                for minutes_name in minutes_speakers:
+                    minutes_parts = minutes_name.lower().split()
+                    minutes_first = minutes_parts[0] if minutes_parts else ""
+                    minutes_last = minutes_parts[-1] if len(minutes_parts) > 1 else ""
+
+                    # Match by first name OR last name (handles ASR errors like "Neil" -> "Tennille")
+                    matched = False
+                    if intro_first and minutes_first and intro_first == minutes_first:
+                        matched = True
+                    elif intro_last and minutes_last and intro_last == minutes_last:
+                        matched = True
+
+                    if matched:
+                        # Use the minutes name (more reliable than ASR)
+                        profile.identified_name = minutes_name
+                        profile.identified_role = "Public"
+                        profile.confidence = 0.95  # High confidence with minutes validation
+                        break
+
+                if profile.identified_name:  # Already matched
+                    break
+
+                # Check if matches council member
+                for council_name in minutes_council:
+                    if council_name.lower() == intro_first:
+                        profile.identified_name = f"Council Member {council_name}"
+                        profile.identified_role = "Council"
+                        profile.confidence = 0.95
+                        break
 
     def detect_roles(self):
         """Detect Chair and Clerk by their characteristic phrases."""
@@ -345,9 +408,13 @@ class SpeakerIdentifier:
     def finalize_identifications(self):
         """Finalize speaker identifications based on accumulated evidence."""
         for speaker_id, profile in self.profiles.items():
-            # Skip if already identified as Chair or Clerk
+            # Skip if already identified (by Chair/Clerk detection or minutes matching)
             if profile.identified_role in ["Chair", "Clerk"]:
                 profile.confidence = 0.8
+                continue
+
+            # Skip if already identified with high confidence (minutes matching)
+            if profile.identified_name and profile.confidence >= 0.9:
                 continue
 
             # Check self-introductions (highest confidence for guests)
@@ -411,6 +478,9 @@ class SpeakerIdentifier:
         if not self.load_diarization():
             return {}
 
+        # Load minutes data if available
+        self.load_minutes_data()
+
         # Phase 1: Detect roles (Chair, Clerk)
         self.detect_roles()
 
@@ -423,7 +493,10 @@ class SpeakerIdentifier:
         # Phase 4: Detect attributions (motions, seconds, direct address)
         self.detect_attributions()
 
-        # Phase 5: Finalize identifications
+        # Phase 5: Match with minutes data
+        self.match_speakers_with_minutes()
+
+        # Phase 6: Finalize identifications
         self.finalize_identifications()
 
         return self.build_speaker_mapping()
