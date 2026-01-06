@@ -15,6 +15,7 @@ Enhanced to export:
 
 import csv
 import json
+import re
 import sqlite3
 from collections import Counter, defaultdict
 from datetime import datetime
@@ -31,6 +32,120 @@ OUTPUT_PATH = OUTPUT_DIR / "meetings.json"
 PUBLIC_DIR = SCRIPT_DIR.parent / "public"
 PUBLIC_DATA_DIR = PUBLIC_DIR / "data"
 PUBLIC_TRANSCRIPTS_DIR = PUBLIC_DIR / "transcripts"
+
+
+def normalize_text_for_wer(text: str) -> str:
+    """Normalize text for WER calculation by removing punctuation and extra whitespace."""
+    if not text:
+        return ""
+    # Remove punctuation (keep alphanumeric and spaces)
+    text = re.sub(r'[^\w\s]', '', text)
+    # Normalize whitespace
+    text = ' '.join(text.lower().split())
+    return text
+
+
+def calculate_normalized_wer(text1: str, text2: str, max_words: int = 2000) -> float | None:
+    """Calculate WER between two texts after normalizing punctuation.
+
+    Uses chunked sampling for efficiency on long transcripts.
+    Args:
+        text1: Reference text
+        text2: Hypothesis text
+        max_words: Maximum words to compare (samples from start, middle, end)
+    """
+    norm1 = normalize_text_for_wer(text1)
+    norm2 = normalize_text_for_wer(text2)
+
+    if not norm1 or not norm2:
+        return None
+
+    if norm1 == norm2:
+        return 0.0
+
+    # Simple word-level Levenshtein distance for WER
+    words1 = norm1.split()
+    words2 = norm2.split()
+
+    if not words1:
+        return 1.0
+
+    # For long transcripts, sample chunks from start, middle, and end
+    # This gives representative WER without O(n*m) on full text
+    if len(words1) > max_words:
+        chunk_size = max_words // 3
+        # Sample from start, middle, and end
+        start1, start2 = words1[:chunk_size], words2[:chunk_size]
+        mid_start = len(words1) // 2 - chunk_size // 2
+        mid1, mid2 = words1[mid_start:mid_start + chunk_size], words2[mid_start:mid_start + chunk_size]
+        end1, end2 = words1[-chunk_size:], words2[-chunk_size:]
+
+        # Calculate WER for each chunk and average
+        wer_sum = 0
+        count = 0
+        for w1, w2 in [(start1, start2), (mid1, mid2), (end1, end2)]:
+            wer = _calculate_edit_distance_wer(w1, w2)
+            if wer is not None:
+                wer_sum += wer
+                count += 1
+
+        return wer_sum / count if count > 0 else None
+    else:
+        return _calculate_edit_distance_wer(words1, words2)
+
+
+def _calculate_edit_distance_wer(words1: list[str], words2: list[str]) -> float | None:
+    """Calculate WER using DP edit distance on word lists."""
+    if not words1:
+        return 1.0 if words2 else 0.0
+
+    # Use dynamic programming for edit distance
+    m, n = len(words1), len(words2)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+
+    for i in range(m + 1):
+        dp[i][0] = i
+    for j in range(n + 1):
+        dp[0][j] = j
+
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if words1[i - 1] == words2[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+            else:
+                dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
+
+    # WER = edit_distance / reference_length
+    return dp[m][n] / m
+
+
+def get_wer_scores_excluding_canceled(conn) -> dict[int, float]:
+    """Get WER scores excluding canceled meetings.
+
+    Uses original database WER scores (properly calculated) but filters out
+    canceled meetings which have artificially high WER due to minimal content.
+    """
+    query = """
+        SELECT tv.clip_id, tv.wer_score, m.title
+        FROM transcription_validation tv
+        JOIN meetings m ON m.clip_id = tv.clip_id
+        WHERE tv.wer_score IS NOT NULL
+          AND tv.wer_score <= 1.0
+    """
+    rows = conn.execute(query).fetchall()
+
+    wer_scores = {}
+    for row in rows:
+        clip_id = row["clip_id"]
+        title = row["title"] or ""
+
+        # Skip canceled meetings - they have artificially high WER
+        if "cancel" in title.lower():
+            continue
+
+        wer_scores[clip_id] = row["wer_score"]
+
+    return wer_scores
 
 
 def get_db_connection():
@@ -572,8 +687,14 @@ def export_topics(meetings: list[dict]) -> dict:
     return topics_data
 
 
-def export_statistics(meetings: list[dict], all_votes: list[dict]) -> dict:
-    """Export pre-calculated statistics for dashboard."""
+def export_statistics(meetings: list[dict], all_votes: list[dict], conn=None) -> dict:
+    """Export pre-calculated statistics for dashboard.
+
+    Args:
+        meetings: List of meeting data
+        all_votes: List of all votes
+        conn: Optional database connection for normalized WER calculation
+    """
     # Meetings by month
     meetings_by_month = Counter()
     meetings_by_type = Counter()
@@ -605,13 +726,19 @@ def export_statistics(meetings: list[dict], all_votes: list[dict]) -> dict:
             month = date[:7]
             votes_by_month[month] += 1
 
-    # Quality statistics
-    # Filter out invalid WER scores (> 1.0 indicates data issues)
-    # WER is model agreement between large_v3 and medium Whisper models
-    valid_wer_scores = [
-        m.get("werScore") for m in meetings
-        if m.get("werScore") is not None and m.get("werScore") <= 1.0
-    ]
+    # Quality statistics - exclude canceled meetings (which have artificially high WER)
+    if conn:
+        # Get WER scores excluding canceled meetings
+        wer_scores_filtered = get_wer_scores_excluding_canceled(conn)
+        valid_wer_scores = list(wer_scores_filtered.values())
+    else:
+        # Fallback to raw WER scores from meetings data
+        # Filter out invalid WER scores (> 1.0 indicates data issues)
+        valid_wer_scores = [
+            m.get("werScore") for m in meetings
+            if m.get("werScore") is not None and m.get("werScore") <= 1.0
+        ]
+
     # Use median for robustness against outliers
     if valid_wer_scores:
         sorted_wer = sorted(valid_wer_scores)
@@ -733,12 +860,16 @@ if __name__ == "__main__":
     export_data, all_votes = export_meetings()
     meetings = export_data["meetings"]
 
+    # Get database connection for normalized WER calculation
+    conn = get_db_connection()
+
     # Export additional data files
     export_members(all_votes)
     export_alignment(all_votes)
     export_topics(meetings)
-    export_statistics(meetings, all_votes)
+    export_statistics(meetings, all_votes, conn)  # Pass connection for normalized WER
     export_csv_files(meetings, all_votes)
     export_transcript_files(meetings)
 
+    conn.close()
     print("\nAll exports complete!")
