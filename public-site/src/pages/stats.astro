@@ -16,8 +16,11 @@ const totalVotesWithResult = (voteResults.passed || 0) + (voteResults.failed || 
 const passedPercent = totalVotesWithResult > 0 ? Math.round((voteResults.passed || 0) / totalVotesWithResult * 100) : 0;
 const failedPercent = totalVotesWithResult > 0 ? Math.round((voteResults.failed || 0) / totalVotesWithResult * 100) : 0;
 
-// Calculate average WER as accuracy
-const avgAccuracy = overview.averageWer ? Math.round((1 - overview.averageWer) * 100) : null;
+// Calculate model agreement score from median WER
+// This measures how much Whisper large_v3 and medium models agree (not ground-truth accuracy)
+const modelAgreement = overview.medianWer !== null && overview.medianWer !== undefined
+  ? Math.round((1 - overview.medianWer) * 100)
+  : null;
 ---
 
 <BaseLayout title="Statistics">
@@ -53,8 +56,8 @@ const avgAccuracy = overview.averageWer ? Math.round((1 - overview.averageWer) *
       <div class="text-sm text-base-content/60">Speaker Annotated</div>
     </div>
     <div class="bg-base-200 rounded-box p-4 border border-base-300">
-      <div class="text-3xl font-bold text-primary">{avgAccuracy ? `${avgAccuracy}%` : 'N/A'}</div>
-      <div class="text-sm text-base-content/60">Avg Transcript Accuracy</div>
+      <div class="text-3xl font-bold text-primary">{modelAgreement ? `${modelAgreement}%` : 'N/A'}</div>
+      <div class="text-sm text-base-content/60" title="Agreement between two Whisper transcription models">Model Agreement</div>
     </div>
   </div>
 

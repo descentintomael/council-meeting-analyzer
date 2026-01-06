@@ -606,8 +606,19 @@ def export_statistics(meetings: list[dict], all_votes: list[dict]) -> dict:
             votes_by_month[month] += 1
 
     # Quality statistics
-    wer_scores = [m.get("werScore") for m in meetings if m.get("werScore") is not None]
-    avg_wer = sum(wer_scores) / len(wer_scores) if wer_scores else None
+    # Filter out invalid WER scores (> 1.0 indicates data issues)
+    # WER is model agreement between large_v3 and medium Whisper models
+    valid_wer_scores = [
+        m.get("werScore") for m in meetings
+        if m.get("werScore") is not None and m.get("werScore") <= 1.0
+    ]
+    # Use median for robustness against outliers
+    if valid_wer_scores:
+        sorted_wer = sorted(valid_wer_scores)
+        n = len(sorted_wer)
+        median_wer = sorted_wer[n // 2] if n % 2 else (sorted_wer[n // 2 - 1] + sorted_wer[n // 2]) / 2
+    else:
+        median_wer = None
     diarized_count = sum(1 for m in meetings if m.get("diarizedTranscript"))
 
     stats_data = {
@@ -616,7 +627,8 @@ def export_statistics(meetings: list[dict], all_votes: list[dict]) -> dict:
             "totalVotes": len(all_votes),
             "totalTopics": len(set(t for m in meetings for t in m.get("topics", []))),
             "diarizedMeetings": diarized_count,
-            "averageWer": round(avg_wer, 3) if avg_wer else None,
+            "medianWer": round(median_wer, 3) if median_wer else None,
+            "validWerCount": len(valid_wer_scores),
         },
         "meetingsByMonth": dict(sorted(meetings_by_month.items())),
         "meetingsByType": dict(meetings_by_type.most_common()),
