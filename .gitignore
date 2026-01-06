@@ -39,6 +39,10 @@ data/*.db
 *.m4a
 *.wav
 
+# Environment files
+.env
+.env.*
+
 # Logs
 *.log
 
